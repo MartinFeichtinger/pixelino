@@ -1,18 +1,33 @@
 #include <Arduino.h>
+#include <OneButton.h>
 
-// put function declarations here:
-int myFunction(int, int);
+#include "config.h"
 
-void setup() {
-  // put your setup code here, to run once:
-  int result = myFunction(2, 3);
+OneButton bootButton(BOOT_BUTTON, true);
+bool serviceMode = false;
+
+void handleBootButtonClick();
+
+void setup()
+{
+  Serial.begin(115200);
+  pinMode(ONBOARD_LED, OUTPUT);
+  bootButton.attachClick(handleBootButtonClick);  
 }
 
-void loop() {
-  // put your main code here, to run repeatedly:
+void loop()
+{
+  bootButton.tick();
+
+  if(serviceMode)
+  {
+    Serial.println(millis());
+  }
 }
 
-// put function definitions here:
-int myFunction(int x, int y) {
-  return x + y;
+void handleBootButtonClick()
+{
+  // toggel service mode and signal an active service mode by activating the onboard led
+  serviceMode = !serviceMode;
+  digitalWrite(ONBOARD_LED, serviceMode ? HIGH : LOW);
 }
