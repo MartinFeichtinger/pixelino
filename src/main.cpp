@@ -4,7 +4,7 @@
 #include "config.h"
 #include "app/serviceCLI.h"
 
-OneButton bootButton(BOOT_BUTTON, true);
+OneButton bootButton(PIN_BOOT_BUTTON, true);
 bool serviceMode = false;
 
 void handleBootButtonClick();
@@ -13,7 +13,7 @@ void setup()
 {
   Serial.begin(115200);
 
-  pinMode(ONBOARD_LED, OUTPUT);
+  pinMode(PIN_ONBOARD_LED, OUTPUT);
   bootButton.attachClick(handleBootButtonClick);
 
   SERVICE_CLI_init();
@@ -36,11 +36,11 @@ void handleBootButtonClick()
 	if(serviceMode)
 	{
 		SERVICE_CLI_activate();
-		digitalWrite(ONBOARD_LED, HIGH);
+		digitalWrite(PIN_ONBOARD_LED, HIGH);
 	}
 	else
 	{
 		SERVICE_CLI_deactivate();
-		digitalWrite(ONBOARD_LED, LOW);
+		digitalWrite(PIN_ONBOARD_LED, LOW);
 	}
 }
