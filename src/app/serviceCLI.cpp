@@ -1,48 +1,30 @@
-#include "serviceCLI.h"
-#include <Arduino.h>
-#include <SimpleCLI.h>	// props to spacehuhn for this amazing library
+#include "serviceCLI.hpp"
 
-SimpleCLI cli;
-
-
-void errorCallback(cmd_error* e);
-void pingCallback(cmd* c);
-
-
-void SERVICE_CLI_init(void)
-{
+void ServiceCLI::init(void) {
 	// initiate all commands and connect them to their callbacks
-	cli.addCommand("ping", pingCallback);
-	cli.setOnError(errorCallback);
+	m_cli.addCommand("ping", pingCallback);
+	m_cli.setOnError(errorCallback);
 }
 
-
-void SERVICE_CLI_activate(void)
-{
+void ServiceCLI::activate(void) {
 	Serial.println("==================================== serviceCLI activated ====================================");
 	Serial.print("serviceCLI-esp32> ");
 }
 
-
-void SERVICE_CLI_deactivate(void)
-{
+void ServiceCLI::deactivate(void) {
+	Serial.println("");
 	Serial.println("=================================== serviceCLI deactivated ===================================");
 }
 
-
-void SERVICE_CLI_runService(void)
-{
-	if(Serial.available())
-	{
+void ServiceCLI::tick(void) {
+	if (Serial.available()) {
 		String input = Serial.readStringUntil('\n');
-		cli.parse(input);
+		m_cli.parse(input);
 		Serial.print("serviceCLI-esp32> ");
 	}
 }
 
-
-void errorCallback(cmd_error* e)
-{
+void ServiceCLI::errorCallback(cmd_error* e) {
     CommandError cmdError(e); // Create wrapper object
 
     // Print error
@@ -57,7 +39,6 @@ void errorCallback(cmd_error* e)
     }
 }
 
-void pingCallback(cmd* c)
-{
+void ServiceCLI::pingCallback(cmd* c) {
 	Serial.println("pong");
 }

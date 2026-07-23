@@ -1,9 +1,9 @@
 #include <Arduino.h>
 #include <OneButton.h>
-
 #include "config.h"
-#include "app/serviceCLI.h"
+#include "app/serviceCLI.hpp"
 
+ServiceCLI serviceCLI;
 OneButton bootButton(PIN_BOOT_BUTTON, true);
 bool serviceMode = false;
 
@@ -16,7 +16,7 @@ void setup()
   pinMode(PIN_ONBOARD_LED, OUTPUT);
   bootButton.attachClick(handleBootButtonClick);
 
-  SERVICE_CLI_init();
+  serviceCLI.init();
 }
 
 void loop()
@@ -25,7 +25,7 @@ void loop()
 
   if(serviceMode)
   {
-    SERVICE_CLI_runService();
+    serviceCLI.tick();
   }
 }
 
@@ -35,12 +35,12 @@ void handleBootButtonClick()
 	serviceMode = !serviceMode;
 	if(serviceMode)
 	{
-		SERVICE_CLI_activate();
+		serviceCLI.activate();
 		digitalWrite(PIN_ONBOARD_LED, HIGH);
 	}
 	else
 	{
-		SERVICE_CLI_deactivate();
+		serviceCLI.deactivate();
 		digitalWrite(PIN_ONBOARD_LED, LOW);
 	}
 }
