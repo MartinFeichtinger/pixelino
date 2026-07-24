@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace Engine {
+namespace engine {
 
     struct Position {
         std::uint8_t x{0};

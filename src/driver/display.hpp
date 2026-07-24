@@ -5,7 +5,7 @@
 #include "config.hpp"
 #include "types.hpp"
 
-namespace Engine {
+namespace engine {
 
 class Display {
 public:

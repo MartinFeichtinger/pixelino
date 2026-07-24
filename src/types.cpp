@@ -1,7 +1,7 @@
 #include "types.hpp"
 #include <FastLED.h>
 
-namespace Engine {
+namespace engine {
 
 Color Color::fromHSV(std::uint8_t hue, std::uint8_t sat, std::uint8_t val) {
     // FastLED's CHSV class handles the HSV -> RGB math instantly
