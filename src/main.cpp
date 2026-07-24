@@ -17,8 +17,6 @@ void setup()
 
   pinMode(config::pin::onboard_led, OUTPUT);
   bootButton.attachClick(handleBootButtonClick);
-
-  serviceCLI.init();
 }
 
 void loop()

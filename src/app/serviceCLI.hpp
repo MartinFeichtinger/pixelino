@@ -5,8 +5,7 @@
 
 class ServiceCLI {
 public:
-    ServiceCLI() = default;
-    void init();
+    ServiceCLI();
     void activate();
     void deactivate();
     void tick();

@@ -1,6 +1,6 @@
 #include "serviceCLI.hpp"
 
-void ServiceCLI::init(void) {
+ServiceCLI::ServiceCLI() {
 	// initiate all commands and connect them to their callbacks
 	m_cli.addCommand("ping", pingCallback);
 	m_cli.setOnError(errorCallback);
