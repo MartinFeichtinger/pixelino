@@ -32,7 +32,7 @@ void ServiceCLI::activate(void) {
 
     m_isActive = true;
     digitalWrite(config::pin::onboard_led, HIGH);
-    Serial.println("\n==================================== serviceCLI activated ====================================");
+    Serial.println("\n====================================== serviceCLI activated =======================================");
     Serial.print("serviceCLI-esp32> ");
 }
 
@@ -41,7 +41,7 @@ void ServiceCLI::deactivate(void) {
 
     m_isActive = false;
     digitalWrite(config::pin::onboard_led, LOW);
-    Serial.println("=================================== serviceCLI deactivated ===================================");
+    Serial.println("===================================== serviceCLI deactivated ======================================");
 	Serial.println();
 }
 
