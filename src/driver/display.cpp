@@ -9,7 +9,7 @@ Engine::Display& Engine::Display::getInstance() {
     return instance;
 }
 
-Engine::Display::Display() {
+void Engine::Display::begin() {
     config::display::init(m_leds);
 	FastLED.setDither(BINARY_DITHER);
   	FastLED.setBrightness(config::display::brightness);

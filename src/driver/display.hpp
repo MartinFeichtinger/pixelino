@@ -15,6 +15,7 @@ public:
     void operator=(const Display&) = delete;    
 
 	// basic functions
+    void begin();
 	void show();
     void clear();
 
@@ -30,7 +31,7 @@ public:
 
 private:
     // private construtor
-    Display();
+    Display() = default;
 
 	// array containing the the color for each led, used by the FastLED library
     CRGB m_leds[config::display::num_leds];
