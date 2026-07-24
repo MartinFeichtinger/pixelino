@@ -6,9 +6,16 @@ ServiceCLI& ServiceCLI::getInstance() {
 }
 
 ServiceCLI::ServiceCLI() {
-    m_cli.addCommand("ping", pingCallback);
-    m_cli.addCommand("exit", exitCallback);
-    m_cli.setOnError(errorCallback);
+    Command pingCmd = m_cli.addCommand("ping", pingCallback);
+	pingCmd.setDescription(" Response with pong to test CLI connection.");
+
+    Command exitCmd = m_cli.addCommand("exit", exitCallback);
+	exitCmd.setDescription(" Deactivates the service CLI mode.");
+
+	Command helpCmd = m_cli.addCommand("h/elp", helpCallback);
+	helpCmd.setDescription(" Display all available commands and there usage.");
+
+	m_cli.setOnError(errorCallback);
 }
 
 void ServiceCLI::begin() {
@@ -89,6 +96,11 @@ void ServiceCLI::exitCallback(cmd* c) {
 
 void ServiceCLI::pingCallback(cmd* c) {
     Serial.println("pong");
+}
+
+void ServiceCLI::helpCallback(cmd* c) {
+	Serial.println();
+    Serial.print(getInstance().m_cli.toString());    
 }
 
 void ServiceCLI::errorCallback(cmd_error* e) {

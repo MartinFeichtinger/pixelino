@@ -32,4 +32,5 @@ private:
     static void errorCallback(cmd_error* e);
     static void pingCallback(cmd* c);
     static void exitCallback(cmd* c);
+	static void helpCallback(cmd* c);
 };
