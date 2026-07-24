@@ -1,7 +1,9 @@
 #include <Arduino.h>
 #include <OneButton.h>
-#include "config.h"
+#include "config.hpp"
+#include "types.hpp"
 #include "app/serviceCLI.hpp"
+#include "driver/display.hpp"
 
 ServiceCLI serviceCLI;
 OneButton bootButton(config::pin::boot_button, true);
