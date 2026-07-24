@@ -1,17 +1,34 @@
 #pragma once
 
 #include <Arduino.h>
-#include <SimpleCLI.h>  // props to spacehuhn for this amazing library
+#include <SimpleCLI.h>
+#include "config.hpp"
 
 class ServiceCLI {
 public:
-    ServiceCLI();
+    // Access the single global instance
+    static ServiceCLI& getInstance();
+
+    // Prevent accidental copying
+    ServiceCLI(const ServiceCLI&) = delete;
+    void operator=(const ServiceCLI&) = delete;
+
+	void begin();
     void activate();
     void deactivate();
+    void toggle();
     void tick();
 
+    bool isActive() const { return m_isActive; }
+
 private:
+    ServiceCLI(); // Private constructor
+
     SimpleCLI m_cli;
+    bool m_isActive = false;
+
+	// CLI callback funtions
     static void errorCallback(cmd_error* e);
     static void pingCallback(cmd* c);
+    static void exitCallback(cmd* c);
 };

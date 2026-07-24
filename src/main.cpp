@@ -1,46 +1,23 @@
 #include <Arduino.h>
 #include <OneButton.h>
 #include "config.hpp"
-#include "types.hpp"
 #include "app/serviceCLI.hpp"
-#include "driver/display.hpp"
 
-ServiceCLI serviceCLI;
 OneButton bootButton(config::pin::boot_button, true);
-bool serviceMode = false;
 
-void handleBootButtonClick();
-
-void setup()
-{
-  Serial.begin(115200);
-
-  pinMode(config::pin::onboard_led, OUTPUT);
-  bootButton.attachClick(handleBootButtonClick);
+void handleBootButtonClick() {
+	// activate/deactivate the service mode
+	ServiceCLI::getInstance().toggle();
 }
 
-void loop()
-{
-  bootButton.tick();
+void setup() {
+    Serial.begin(115200);
 
-  if(serviceMode)
-  {
-    serviceCLI.tick();
-  }
+	ServiceCLI::getInstance().begin();
+    bootButton.attachClick(handleBootButtonClick);
 }
 
-void handleBootButtonClick()
-{
-	// toggel service mode and signal an active service mode by activating the onboard led
-	serviceMode = !serviceMode;
-	if(serviceMode)
-	{
-		serviceCLI.activate();
-		digitalWrite(config::pin::onboard_led, HIGH);
-	}
-	else
-	{
-		serviceCLI.deactivate();
-		digitalWrite(config::pin::onboard_led, LOW);
-	}
+void loop() {
+    bootButton.tick();
+    ServiceCLI::getInstance().tick(); 
 }
