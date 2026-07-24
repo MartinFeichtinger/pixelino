@@ -4,6 +4,11 @@
 #include "config.hpp"
 #include "types.hpp"
 
+Engine::Display& Engine::Display::getInstance() {
+    static Display instance;
+    return instance;
+}
+
 Engine::Display::Display() {
     config::display::init(m_leds);
 	FastLED.setDither(BINARY_DITHER);

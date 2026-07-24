@@ -9,8 +9,10 @@ namespace Engine {
 
 class Display {
 public:
-	// construtor (init function)
-    Display();
+    // single global instance
+    static Display& getInstance();
+    Display(const Display&) = delete;
+    void operator=(const Display&) = delete;    
 
 	// basic functions
 	void show();
@@ -27,6 +29,9 @@ public:
 	// ...
 
 private:
+    // private construtor
+    Display();
+
 	// array containing the the color for each led, used by the FastLED library
     CRGB m_leds[config::display::num_leds];
 
