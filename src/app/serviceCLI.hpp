@@ -26,6 +26,7 @@ private:
 
     SimpleCLI m_cli;
     bool m_isActive = false;
+	String m_inputBuffer = "";
 
 	// CLI callback funtions
     static void errorCallback(cmd_error* e);

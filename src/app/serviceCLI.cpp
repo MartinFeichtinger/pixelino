@@ -50,17 +50,15 @@ void ServiceCLI::toggle(void) {
 void ServiceCLI::tick(void) {
     if (!m_isActive) return;
 
-    static String inputBuffer = "";
-
     while (Serial.available()) {
         char c = Serial.read();
 
         if (c == '\n') {
             Serial.println();
             
-            if (inputBuffer.length() > 0) {
-                m_cli.parse(inputBuffer);
-                inputBuffer = ""; // Reset buffer
+            if (m_inputBuffer.length() > 0) {
+                m_cli.parse(m_inputBuffer);
+                m_inputBuffer = ""; // Reset buffer
             }
 
             if (m_isActive) {
@@ -69,8 +67,8 @@ void ServiceCLI::tick(void) {
         }
         // handle backspace (0x08 / '\b' or 0x7F / DEL)
         else if (c == '\b' || c == 0x7F) {
-            if (inputBuffer.length() > 0) {
-                inputBuffer.remove(inputBuffer.length() - 1); // delete from internal memory
+            if (m_inputBuffer.length() > 0) {
+                m_inputBuffer.remove(m_inputBuffer.length() - 1); // delete from internal memory
                 
                 // ERASE ON SCREEN: Backspace -> Space -> Backspace
                 Serial.print("\b \b"); 
@@ -78,7 +76,7 @@ void ServiceCLI::tick(void) {
         }
         // handle normal characters
         else if (c >= 32 && c <= 126) { // printable ASCII range
-            inputBuffer += c;
+            m_inputBuffer += c;
             Serial.print(c); // echo character back to screen immediately
         }
     }
