@@ -22,7 +22,7 @@ public:
     bool isActive() const { return m_isActive; }
 
 private:
-    ServiceCLI(); // Private constructor
+    ServiceCLI() = default; // Private constructor
 
     SimpleCLI m_cli;
     bool m_isActive = false;

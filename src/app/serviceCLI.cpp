@@ -7,8 +7,10 @@ ServiceCLI& ServiceCLI::getInstance() {
     return instance;
 }
 
-ServiceCLI::ServiceCLI() {
-    Command pingCmd = m_cli.addCommand("ping", pingCallback);
+void ServiceCLI::begin() {
+	pinMode(config::pin::onboard_led, OUTPUT);
+
+	Command pingCmd = m_cli.addCommand("ping", pingCallback);
 	pingCmd.setDescription(" Response with pong to test CLI connection.");
 
     Command exitCmd = m_cli.addCommand("exit", exitCallback);
@@ -27,10 +29,6 @@ ServiceCLI::ServiceCLI() {
 	displayCmd.setDescription(" Allows to manipulate the display via the serviceCLI (fill, setPixel, clear).");
 
 	m_cli.setOnError(errorCallback);
-}
-
-void ServiceCLI::begin() {
-	pinMode(config::pin::onboard_led, OUTPUT);
 }
 
 void ServiceCLI::activate(void) {
