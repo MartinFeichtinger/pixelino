@@ -1,4 +1,6 @@
 #include "serviceCLI.hpp"
+#include "types.hpp"
+#include "driver/display.hpp"
 
 ServiceCLI& ServiceCLI::getInstance() {
     static ServiceCLI instance; // Guaranteed single instance
@@ -14,6 +16,15 @@ ServiceCLI::ServiceCLI() {
 
 	Command helpCmd = m_cli.addCommand("h/elp", helpCallback);
 	helpCmd.setDescription(" Display all available commands and there usage.");
+
+    Command displayCmd = m_cli.addCommand("display", displayCallback);
+    displayCmd.addPositionalArgument("action"); // "fill", "setPixel", "clear"
+    displayCmd.addArgument("x", "0");
+    displayCmd.addArgument("y", "0");
+    displayCmd.addArgument("r", "0");
+    displayCmd.addArgument("g", "0");
+    displayCmd.addArgument("b", "0");
+	displayCmd.setDescription(" Allows to manipulate the display via the serviceCLI (fill, setPixel, clear).");
 
 	m_cli.setOnError(errorCallback);
 }
@@ -101,6 +112,36 @@ void ServiceCLI::pingCallback(cmd* c) {
 void ServiceCLI::helpCallback(cmd* c) {
 	Serial.println();
     Serial.print(getInstance().m_cli.toString());    
+}
+
+void ServiceCLI::displayCallback(cmd* c) {
+    Command cmd(c);
+    
+    String action = cmd.getArgument("action").getValue();
+    
+    uint8_t r = cmd.getArgument("r").getValue().toInt();
+    uint8_t g = cmd.getArgument("g").getValue().toInt();
+    uint8_t b = cmd.getArgument("b").getValue().toInt();
+    uint8_t x = cmd.getArgument("x").getValue().toInt();
+    uint8_t y = cmd.getArgument("y").getValue().toInt();
+
+    engine::Display& display = engine::Display::getInstance();
+
+    if (action.equalsIgnoreCase("fill")) {
+        display.fill(engine::Color(r, g, b));
+        display.show();
+    } 
+    else if (action.equalsIgnoreCase("setPixel")) {
+        display.setPixel(x, y, engine::Color(r, g, b));
+        display.show();
+    } 
+    else if (action.equalsIgnoreCase("clear")) {
+        display.clear();
+        display.show();
+    }
+	else {
+		Serial.println("ERROR: Missing argument <fill, setPixel, clear>");
+	}
 }
 
 void ServiceCLI::errorCallback(cmd_error* e) {

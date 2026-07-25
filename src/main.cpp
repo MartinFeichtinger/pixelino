@@ -2,6 +2,7 @@
 #include <OneButton.h>
 #include "config.hpp"
 #include "app/serviceCLI.hpp"
+#include "driver/display.hpp"
 
 OneButton bootButton(config::pin::boot_button, true);
 
@@ -13,8 +14,12 @@ void handleBootButtonClick() {
 void setup() {
     Serial.begin(115200);
 
+	// hardware inits
+	engine::Display::getInstance().begin();
+
+	// service inits
 	ServiceCLI::getInstance().begin();
-    bootButton.attachClick(handleBootButtonClick);
+	bootButton.attachClick(handleBootButtonClick);
 }
 
 void loop() {

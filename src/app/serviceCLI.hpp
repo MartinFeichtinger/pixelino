@@ -29,8 +29,9 @@ private:
 	String m_inputBuffer = "";
 
 	// CLI callback funtions
-    static void errorCallback(cmd_error* e);
     static void pingCallback(cmd* c);
     static void exitCallback(cmd* c);
 	static void helpCallback(cmd* c);
+    static void displayCallback(cmd* c);
+    static void errorCallback(cmd_error* e);
 };
