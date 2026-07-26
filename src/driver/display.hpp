@@ -2,10 +2,10 @@
 
 #include <cstdint>
 #include <FastLED.h>
-#include "config.hpp"
-#include "types.hpp"
+#include "core/config.hpp"
+#include "core/types.hpp"
 
-namespace engine {
+namespace pixelino::driver {
 
 class Display {
 public:
@@ -20,10 +20,10 @@ public:
     void clear();
 
     // drawing funcitons
-	void fill(Color col);
-    void setPixel(const Pixel& pix);
-    void setPixel(Position pos, Color col);
-    void setPixel(uint8_t x, uint8_t y, Color col);
+	void fill(core::Color col);
+    void setPixel(const core::Pixel& pix);
+    void setPixel(core::Position pos, core::Color col);
+    void setPixel(uint8_t x, uint8_t y, core::Color col);
 
 	// calibrate functions (not implemented yet)
 	// hueSweep (rainbow)
@@ -34,7 +34,7 @@ private:
     Display() = default;
 
 	// array containing the the color for each led, used by the FastLED library
-    CRGB m_leds[config::display::num_leds];
+    CRGB m_leds[core::config::display::num_leds];
 
 	// carbrate coretion data (not implemented yet)
     

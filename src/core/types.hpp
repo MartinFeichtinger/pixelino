@@ -1,7 +1,7 @@
 #pragma once
 #include <cstdint>
 
-namespace engine {
+namespace pixelino::core {
 
     struct Position {
         std::uint8_t x{0};

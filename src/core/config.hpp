@@ -3,7 +3,7 @@
 #include <cstdint>
 #include <FastLED.h>
 
-namespace config {
+namespace pixelino::core::config {
 
     namespace pin {
         constexpr std::uint8_t boot_button  = 0;

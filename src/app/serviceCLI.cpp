@@ -1,6 +1,13 @@
 #include "serviceCLI.hpp"
-#include "types.hpp"
+#include "core/config.hpp"
+#include "core/types.hpp"
 #include "driver/display.hpp"
+
+namespace pixelino::app {
+
+using core::config::pin::onboard_led;
+using core::Color;
+
 
 ServiceCLI& ServiceCLI::getInstance() {
     static ServiceCLI instance; // Guaranteed single instance
@@ -8,7 +15,7 @@ ServiceCLI& ServiceCLI::getInstance() {
 }
 
 void ServiceCLI::begin() {
-	pinMode(config::pin::onboard_led, OUTPUT);
+	pinMode(onboard_led, OUTPUT);
 
 	Command pingCmd = m_cli.addCommand("ping", pingCallback);
 	pingCmd.setDescription(" Response with pong to test CLI connection.");
@@ -40,7 +47,7 @@ void ServiceCLI::activate(void) {
 	}
 
     m_isActive = true;
-    digitalWrite(config::pin::onboard_led, HIGH);
+    digitalWrite(onboard_led, HIGH);
     Serial.println("\n====================================== serviceCLI activated =======================================");
     Serial.print("serviceCLI-esp32> ");
 }
@@ -49,7 +56,7 @@ void ServiceCLI::deactivate(void) {
     if (!m_isActive) return;
 
     m_isActive = false;
-    digitalWrite(config::pin::onboard_led, LOW);
+    digitalWrite(onboard_led, LOW);
     Serial.println("===================================== serviceCLI deactivated ======================================");
 	Serial.println();
 }
@@ -123,14 +130,14 @@ void ServiceCLI::displayCallback(cmd* c) {
     uint8_t x = cmd.getArgument("x").getValue().toInt();
     uint8_t y = cmd.getArgument("y").getValue().toInt();
 
-    engine::Display& display = engine::Display::getInstance();
+    driver::Display& display = driver::Display::getInstance();
 
     if (action.equalsIgnoreCase("fill")) {
-        display.fill(engine::Color(r, g, b));
+        display.fill(Color(r, g, b));
         display.show();
     } 
     else if (action.equalsIgnoreCase("setPixel")) {
-        display.setPixel(x, y, engine::Color(r, g, b));
+        display.setPixel(x, y, Color(r, g, b));
         display.show();
     } 
     else if (action.equalsIgnoreCase("clear")) {
@@ -152,4 +159,6 @@ void ServiceCLI::errorCallback(cmd_error* e) {
         Serial.print(cmdError.getCommand().toString());
         Serial.println("\"?");
     }
+}
+
 }

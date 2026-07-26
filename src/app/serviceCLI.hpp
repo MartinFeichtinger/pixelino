@@ -2,7 +2,8 @@
 
 #include <Arduino.h>
 #include <SimpleCLI.h>
-#include "config.hpp"
+
+namespace pixelino::app {
 
 class ServiceCLI {
 public:
@@ -35,3 +36,5 @@ private:
     static void displayCallback(cmd* c);
     static void errorCallback(cmd_error* e);
 };
+
+}
