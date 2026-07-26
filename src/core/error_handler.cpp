@@ -30,7 +30,8 @@ void ErrorHandler::handle(ErrorCode code) {
     }
 
     if ((level == ErrorLevel::FATAL && m_mode == ErrorMode::CRASH_ON_FATAL)
-        || (level == ErrorLevel::ERROR && m_mode == ErrorMode::CRASH_ON_ERROR)) {
+        || (level == ErrorLevel::ERROR && m_mode == ErrorMode::CRASH_ON_ERROR)
+        || (level == ErrorLevel::WARNING && m_mode == ErrorMode::CRASH_ON_WARNING))  {
 		driver::Display::getInstance().fill(core::Color::Blue());
 		driver::Display::getInstance().show();
         haltSystem();
