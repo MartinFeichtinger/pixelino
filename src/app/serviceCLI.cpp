@@ -174,7 +174,7 @@ void ServiceCLI::logCallback(cmd* c)
         core::ErrorHandler::getInstance().printLogHistory();
     }
     else if(action.equalsIgnoreCase("clear")) {
-        core::ErrorHandler::getInstance().clear();
+        core::ErrorHandler::getInstance().clearLog();
     }
 }
 
