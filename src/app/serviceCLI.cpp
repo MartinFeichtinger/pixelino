@@ -1,6 +1,8 @@
 #include "serviceCLI.hpp"
 #include "core/config.hpp"
 #include "core/types.hpp"
+#include "core/error_handler.hpp"
+#include "core/error_types.hpp"
 #include "driver/display.hpp"
 
 namespace pixelino::app {
@@ -35,7 +37,18 @@ void ServiceCLI::begin() {
     displayCmd.addArgument("b", "0");
 	displayCmd.setDescription(" Allows to manipulate the display via the serviceCLI (fill, setPixel, clear).");
 
-	m_cli.setOnError(errorCallback);
+    Command logCmd = m_cli.addCommand("log", logCallback);
+    logCmd.addPositionalArgument("action", "show"); // "show", "clear"
+    logCmd.setDescription(" Allows to access and clear the error log (show, clear).");
+
+    Command setErrorModeCmd = m_cli.addCommand("setErrorMode", setErrorModeCallback);
+    setErrorModeCmd.addPositionalArgument("mode", "log_live");
+    setErrorModeCmd.setDescription(" Allows to change the error handling mode (silent, log_only, log_life, brodcast, chrash_on_fatal, crash_on_error).");
+
+    Command getErrorModeCmd = m_cli.addCommand("getErrorMode", getErrorModeCallback);
+    getErrorModeCmd.setDescription( "Returns the current error mode.");
+
+	m_cli.setOnError(cliErrorCallback);
 }
 
 void ServiceCLI::activate(void) {
@@ -48,6 +61,7 @@ void ServiceCLI::activate(void) {
 
     m_isActive = true;
     digitalWrite(onboard_led, HIGH);
+    core::ErrorHandler::getInstance().setLiveOutput(true);
     Serial.println("\n====================================== serviceCLI activated =======================================");
     Serial.print("serviceCLI-esp32> ");
 }
@@ -57,6 +71,7 @@ void ServiceCLI::deactivate(void) {
 
     m_isActive = false;
     digitalWrite(onboard_led, LOW);
+    core::ErrorHandler::getInstance().setLiveOutput(false);
     Serial.println("===================================== serviceCLI deactivated ======================================");
 	Serial.println();
 }
@@ -149,9 +164,45 @@ void ServiceCLI::displayCallback(cmd* c) {
 	}
 }
 
-void ServiceCLI::errorCallback(cmd_error* e) {
+void ServiceCLI::logCallback(cmd* c)
+{
+    Command cmd(c);
+
+    String action = cmd.getArgument("action").getValue();
+
+    if (action.equalsIgnoreCase("show")) {
+        core::ErrorHandler::getInstance().printLogHistory();
+    }
+    else if(action.equalsIgnoreCase("clear")) {
+        core::ErrorHandler::getInstance().clear();
+    }
+}
+
+
+void ServiceCLI::setErrorModeCallback(cmd* c) {
+    Command cmd(c);
+
+    String mode = cmd.getArgument("mode").getValue();
+
+    if (mode.equalsIgnoreCase("silent")) core::ErrorHandler::getInstance().setMode(core::ErrorMode::SILENT);
+    else if (mode.equalsIgnoreCase("log_only")) core::ErrorHandler::getInstance().setMode(core::ErrorMode::LOG_ONLY);
+    else if (mode.equalsIgnoreCase("log_live")) core::ErrorHandler::getInstance().setMode(core::ErrorMode::LOG_LIVE);
+    else if (mode.equalsIgnoreCase("brodcast")) core::ErrorHandler::getInstance().setMode(core::ErrorMode::BRODCAST);
+    else if (mode.equalsIgnoreCase("crash_on_fatal")) core::ErrorHandler::getInstance().setMode(core::ErrorMode::CRASH_ON_FATAL);
+    else if (mode.equalsIgnoreCase("crash_on_error")) core::ErrorHandler::getInstance().setMode(core::ErrorMode::CRASH_ON_ERROR);
+    else Serial.println("[CLI_ERROR]: Missing argument <silent, log_only, log_live, brodcast, crash_on_fatal, crash_on_error>");
+
+}
+
+void ServiceCLI::getErrorModeCallback(cmd* c) {
+    Command cmd(c);
+    core::ErrorMode mode = core::ErrorHandler::getInstance().getMode();
+    Serial.println(core::modeToString(mode));
+}
+
+void ServiceCLI::cliErrorCallback(cmd_error* e) {
     CommandError cmdError(e);
-    Serial.print("ERROR: ");
+    Serial.print("[CLI_ERROR]: ");
     Serial.println(cmdError.toString());
 
     if (cmdError.hasCommand()) {

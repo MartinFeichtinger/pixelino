@@ -39,5 +39,4 @@ namespace pixelino::core {
         Position pos;
         Color col;
     };
-
 }

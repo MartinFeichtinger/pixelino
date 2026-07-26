@@ -3,6 +3,8 @@
 #include <FastLED.h>
 #include "core/config.hpp"
 #include "core/types.hpp"
+#include "core/error_handler.hpp"
+#include "core/error_types.hpp"
 
 namespace pixelino::driver {
 
@@ -49,7 +51,7 @@ void Display::setPixel(uint8_t x, uint8_t y, Color col) {
 		m_leds[ledIndex] = CRGB(col.r, col.g, col.b);
 	}
 	else {
-		// further error handling in the futur
+		core::ErrorHandler::getInstance().handle(core::ErrorCode::PIXEL_OUT_OF_BOUNDS);
 	}
 }
 

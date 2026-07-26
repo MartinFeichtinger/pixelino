@@ -25,4 +25,8 @@ namespace pixelino::core::config {
         }
     }
 
+    namespace error {
+        constexpr std::uint8_t max_log_entries = 20;
+    }
+
 }
