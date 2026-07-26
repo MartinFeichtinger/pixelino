@@ -14,9 +14,7 @@ void ErrorHandler::handle(ErrorCode code) {
         // save to 1-byte ring buffer
         m_log[m_head] = code;
         m_head = (m_head + 1) % config::error::max_log_entries;
-        if (m_count < config::error::max_log_entries) {
-            m_count++;
-        }
+        m_count++;
     }
     
     ErrorLevel level = getErrorLevel(code);
@@ -44,9 +42,10 @@ void ErrorHandler::printLogHistory() const {
         return;
     }
 
-    size_t startIdx = (m_count == config::error::max_log_entries) ? m_head : 0;
+    size_t startIdx = (m_count >= config::error::max_log_entries) ? m_head : 0;
+	size_t loggedCount = (m_count <= config::error::max_log_entries) ? m_count : config::error::max_log_entries;
 
-    for (size_t i = 0; i < m_count; i++) {
+    for (size_t i = 0; i < loggedCount; i++) {
         size_t index = (startIdx + i) % config::error::max_log_entries;
         ErrorCode code = m_log[index];
 
@@ -56,6 +55,15 @@ void ErrorHandler::printLogHistory() const {
         Serial.print("] ");
         Serial.println(getErrorMessage(code));
     }
+
+	if (m_count > core::config::error::max_log_entries)
+	{
+		Serial.print("log overflowed: ");
+		Serial.print(m_count);
+		Serial.print(" ERRORS,");
+		Serial.print(core::config::error::max_log_entries);
+		Serial.println(" MAX_LOG_ENTRIES");
+	}
 }
 
 void ErrorHandler::clearLog() {
