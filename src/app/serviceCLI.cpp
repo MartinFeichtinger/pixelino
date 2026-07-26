@@ -43,7 +43,7 @@ void ServiceCLI::begin() {
 
     Command setErrorModeCmd = m_cli.addCommand("setErrorMode", setErrorModeCallback);
     setErrorModeCmd.addPositionalArgument("mode", "log_live");
-    setErrorModeCmd.setDescription(" Allows to change the error handling mode (silent, log_only, log_life, brodcast, chrash_on_fatal, crash_on_error).");
+    setErrorModeCmd.setDescription(" Allows to change the error handling mode (silent, log_only, log_life, brodcast, crash_on_fatal, crash_on_error).");
 
     Command getErrorModeCmd = m_cli.addCommand("getErrorMode", getErrorModeCallback);
     getErrorModeCmd.setDescription( "Returns the current error mode.");
