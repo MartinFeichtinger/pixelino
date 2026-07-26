@@ -51,7 +51,12 @@ void Display::setPixel(uint8_t x, uint8_t y, Color col) {
 		m_leds[ledIndex] = CRGB(col.r, col.g, col.b);
 	}
 	else {
-		core::ErrorHandler::getInstance().handle(core::ErrorCode::PIXEL_OUT_OF_BOUNDS);
+		if (x >= core::config::display::width) {
+			core::ErrorHandler::getInstance().handle(core::ErrorCode::PIXEL_OUT_OF_BOUND_X);
+		}
+		if (y >= core::config::display::height) {
+			core::ErrorHandler::getInstance().handle(core::ErrorCode::PIXEL_OUT_OF_BOUND_Y);
+		}
 	}
 }
 

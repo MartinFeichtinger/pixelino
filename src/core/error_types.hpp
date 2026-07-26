@@ -22,20 +22,23 @@ enum class ErrorMode : std::uint8_t {
 
 enum class ErrorCode : std::uint8_t {
     NONE = 0,
-    PIXEL_OUT_OF_BOUNDS,
+    PIXEL_OUT_OF_BOUND_X,
+    PIXEL_OUT_OF_BOUND_Y
 };
 
 // translates the 1-byte error code into a string on demand
 inline const char* getErrorMessage(ErrorCode code) {
     switch (code) {
-        case ErrorCode::PIXEL_OUT_OF_BOUNDS:	return "Display: Pixel out of bounds";
+        case ErrorCode::PIXEL_OUT_OF_BOUND_X:	return "Display: Pixel out of bound x";
+        case ErrorCode::PIXEL_OUT_OF_BOUND_Y:   return "Display: Pixel out of bound y";
         default:								return "Unknown Error";
     }
 }
 
 inline ErrorLevel getErrorLevel(ErrorCode code) {
     switch (code) {
-        case ErrorCode::PIXEL_OUT_OF_BOUNDS:	return ErrorLevel::WARNING;
+        case ErrorCode::PIXEL_OUT_OF_BOUND_X:	return ErrorLevel::WARNING;
+        case ErrorCode::PIXEL_OUT_OF_BOUND_Y:	return ErrorLevel::WARNING;
         default:								return ErrorLevel::INFO;
     }
 }
