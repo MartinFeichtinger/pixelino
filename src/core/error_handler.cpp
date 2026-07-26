@@ -57,7 +57,7 @@ void ErrorHandler::printLogHistory() const {
     }
 }
 
-void ErrorHandler::clear() {
+void ErrorHandler::clearLog() {
     m_head = 0;
     m_count = 0;
     Serial.println("error log cleared");

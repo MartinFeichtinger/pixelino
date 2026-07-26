@@ -24,7 +24,7 @@ public:
 
     void handle(ErrorCode code);
     void printLogHistory() const;
-    void clear();
+    void clearLog();
 
 private:
     ErrorHandler() = default;
