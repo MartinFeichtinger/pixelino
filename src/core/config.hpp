@@ -5,8 +5,8 @@
 
 namespace pixelino::core::config {
 
-	namespace pin {
-		constexpr std::uint8_t button_onboard	= 0;
+	namespace gpio {
+		constexpr std::uint8_t onboard_button	= 0;
 		constexpr std::uint8_t onboard_led		= 2;
 		constexpr std::uint8_t display_data		= 4;
 		constexpr std::uint8_t key_up			= 22;
@@ -29,7 +29,7 @@ namespace pixelino::core::config {
 		// FastLED's strict templates reject modern C++ aliases, so we wrap the raw initialization here.
 		// This avoids messy #define macros and keeps the main Display constructor hardware-agnostic.
 		inline void init(CRGB* leds) {
-			FastLED.addLeds<WS2812B, pin::display_data, color_order>(leds, num_leds);
+			FastLED.addLeds<WS2812B, gpio::display_data, color_order>(leds, num_leds);
 		}
 	}
 

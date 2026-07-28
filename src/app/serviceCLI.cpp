@@ -8,17 +8,13 @@
 
 namespace pixelino::app {
 
-using core::config::pin::onboard_led;
-using core::Color;
-
-
 ServiceCLI& ServiceCLI::getInstance() {
     static ServiceCLI instance; // Guaranteed single instance
     return instance;
 }
 
 void ServiceCLI::begin(driver::ButtonManager& buttonManager) {
-    pinMode(onboard_led, OUTPUT);
+    pinMode(core::config::gpio::onboard_led, OUTPUT);
 
     // register onboard button trigger directly with ButtonManager
     buttonManager.addSystemHandler([this](driver::ButtonId btn, driver::ButtonEvent evt) {
@@ -70,7 +66,7 @@ void ServiceCLI::activate(void) {
 	}
 
     m_isActive = true;
-    digitalWrite(onboard_led, HIGH);
+    digitalWrite(core::config::gpio::onboard_led, HIGH);
     core::ErrorHandler::getInstance().setLiveOutput(true);
     Serial.println("\n====================================== serviceCLI activated =======================================");
     Serial.print("serviceCLI-esp32> ");
@@ -80,7 +76,7 @@ void ServiceCLI::deactivate(void) {
     if (!m_isActive) return;
 
     m_isActive = false;
-    digitalWrite(onboard_led, LOW);
+    digitalWrite(core::config::gpio::onboard_led, LOW);
     core::ErrorHandler::getInstance().setLiveOutput(false);
     Serial.println("===================================== serviceCLI deactivated ======================================");
 	Serial.println();
@@ -158,11 +154,11 @@ void ServiceCLI::displayCallback(cmd* c) {
     driver::Display& display = driver::Display::getInstance();
 
     if (action.equalsIgnoreCase("fill")) {
-        display.fill(Color(r, g, b));
+        display.fill(core::Color(r, g, b));
         display.show();
     } 
     else if (action.equalsIgnoreCase("setPixel")) {
-        display.setPixel(x, y, Color(r, g, b));
+        display.setPixel(x, y, core::Color(r, g, b));
         display.show();
     } 
     else if (action.equalsIgnoreCase("clear")) {
