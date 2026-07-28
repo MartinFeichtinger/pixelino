@@ -3,6 +3,8 @@
 #include <Arduino.h>
 #include <SimpleCLI.h>
 
+namespace pixelino::driver { class ButtonManager; } // forward declaration
+
 namespace pixelino::app {
 
 class ServiceCLI {
@@ -14,7 +16,7 @@ public:
     ServiceCLI(const ServiceCLI&) = delete;
     void operator=(const ServiceCLI&) = delete;
 
-	void begin();
+	void begin(driver::ButtonManager& buttonManager);
     void activate();
     void deactivate();
     void toggle();

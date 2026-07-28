@@ -4,6 +4,7 @@
 #include "core/error_handler.hpp"
 #include "core/error_types.hpp"
 #include "driver/display.hpp"
+#include "driver/button_manager.hpp"
 
 namespace pixelino::app {
 
@@ -16,8 +17,17 @@ ServiceCLI& ServiceCLI::getInstance() {
     return instance;
 }
 
-void ServiceCLI::begin() {
-	pinMode(onboard_led, OUTPUT);
+void ServiceCLI::begin(driver::ButtonManager& buttonManager) {
+    pinMode(onboard_led, OUTPUT);
+
+    // register onboard button trigger directly with ButtonManager
+    buttonManager.addSystemHandler([this](driver::ButtonId btn, driver::ButtonEvent evt) {
+        if (btn == driver::ButtonId::ONBOARD && evt == driver::ButtonEvent::PRESS) {
+            this->toggle();
+            return true; // we consumed this event
+        }
+        return false; // not our button, let it pass through
+    });
 
 	Command pingCmd = m_cli.addCommand("ping", pingCallback);
 	pingCmd.setDescription(" Response with pong to test CLI connection.");

@@ -1,28 +1,23 @@
-#include <Arduino.h>
-#include <OneButton.h>
 #include "core/config.hpp"
 #include "driver/display.hpp"
+#include "driver/button_manager.hpp"
 #include "app/serviceCLI.hpp"
+#include <OneButton.h>
+#include <Arduino.h>
 
-OneButton bootButton(pixelino::core::config::pin::boot_button, true);
-
-void handleBootButtonClick() {
-	// activate/deactivate the service mode
-	pixelino::app::ServiceCLI::getInstance().toggle();
-}
+pixelino::driver::ButtonManager buttonManager;
 
 void setup() {
     Serial.begin(115200);
 
 	// hardware inits
 	pixelino::driver::Display::getInstance().begin();
+	buttonManager.begin();
 
 	// service inits
-	pixelino::app::ServiceCLI::getInstance().begin();
-	bootButton.attachClick(handleBootButtonClick);
-}
+	pixelino::app::ServiceCLI::getInstance().begin(buttonManager);}
 
 void loop() {
-    bootButton.tick();
+	buttonManager.tick();
     pixelino::app::ServiceCLI::getInstance().tick(); 
 }
