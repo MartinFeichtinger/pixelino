@@ -15,7 +15,8 @@ void setup() {
 	buttonManager.begin();
 
 	// service inits
-	pixelino::app::ServiceCLI::getInstance().begin(buttonManager);}
+	pixelino::app::ServiceCLI::getInstance().begin(buttonManager);
+}
 
 void loop() {
 	buttonManager.tick();

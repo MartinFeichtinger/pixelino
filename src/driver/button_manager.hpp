@@ -9,6 +9,7 @@
 namespace pixelino::driver {
 
 // system handler signature: returns true if event was consumed
+using SystemButtonObserver = std::function<void(ButtonId, ButtonEvent)>;
 using SystemButtonHandler = std::function<bool(ButtonId, ButtonEvent)>;
 using ButtonCallback = std::function<void(ButtonId, ButtonEvent)>;
 
@@ -27,9 +28,13 @@ public:
         m_activeCallback = nullptr;
     }
 
-    void addSystemHandler(SystemButtonHandler handler) {
-        m_systemHandlers.push_back(handler);
+    // system observer: allways run, cannot block/consume events
+    void addSystemObserver(SystemButtonObserver observer) {
+        m_systemObserver.push_back(observer);
     }
+
+    // system handlers: run by priority, CAN consume events
+    void addSystemHandler(SystemButtonHandler handler, HandlerPriority priority = HandlerPriority::NORMAL_PRIORITY);
 
 private:
     struct ButtonBinding {
@@ -38,8 +43,14 @@ private:
         ButtonManager* mgr; // added for the stateless lambda context
     };
 
+    struct SystemHandlerEntry {
+        HandlerPriority priority;
+        SystemButtonHandler handler;
+    };
+
     std::array<ButtonBinding, 9> m_buttons;
-    std::vector<SystemButtonHandler> m_systemHandlers;
+    std::vector<SystemButtonObserver> m_systemObserver;
+    std::vector<SystemHandlerEntry> m_systemHandlers;
     ButtonCallback m_activeCallback = nullptr;
 
     void dispatchEvent(ButtonId id, ButtonEvent event);

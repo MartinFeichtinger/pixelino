@@ -63,17 +63,35 @@ void ButtonManager::tick() {
 	}
 }
 
-void ButtonManager::dispatchEvent(ButtonId id, ButtonEvent event) {
-	// check system handlers first
-	for (auto& handler : m_systemHandlers) {
-		if (handler(id, event)) {
-			return; // vent was consumed by system (e.g. ServiceCLI), STOP here!
-		}
-	}
+void ButtonManager::addSystemHandler(SystemButtonHandler handler, HandlerPriority priority) {
+    // store as struct containing priority + handler function
+    m_systemHandlers.push_back({ priority, handler });
 
-	// if no system handler consumed it, pass it to the active game
-	if (m_activeCallback) {
-		m_activeCallback(id, event);
-	}
+    // sort handlers: Highest priority first
+    std::sort(m_systemHandlers.begin(), m_systemHandlers.end(), 
+        [](const SystemHandlerEntry& a, const SystemHandlerEntry& b) {
+            return static_cast<int>(a.priority) > static_cast<int>(b.priority);
+        });
 }
+
+void ButtonManager::dispatchEvent(ButtonId id, ButtonEvent event) {
+    // PHASE 1: Notify all passive observers (e.g. Audio click sound, Logging)
+    // These run regardless of priorities and CANNOT be blocked
+    for (const SystemButtonObserver& observer : m_systemObserver) {
+        observer(id, event);
+    }
+
+    // PHASE 2: Check priority-based interceptors (e.g. ServiceCLI, Menus)
+    for (const SystemHandlerEntry& entry : m_systemHandlers) {
+        if (entry.handler(id, event)) {
+            return; // Consumed by a higher-priority interceptor!
+        }
+    }
+
+    // PHASE 3: Pass to active game if no interceptor consumed it
+    if (m_activeCallback) {
+        m_activeCallback(id, event);
+    }
+}
+
 } // namespcae pixelino::driver
