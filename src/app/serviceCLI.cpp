@@ -20,11 +20,11 @@ void ServiceCLI::begin(driver::ButtonManager& buttonManager) {
 	// register onboard button trigger directly with ButtonManager
 	buttonManager.addSystemHandler(
 		[this](driver::ButtonId btn, driver::ButtonEvent evt) {
-			if (btn == driver::ButtonId::ONBOARD && evt == driver::ButtonEvent::PRESS) {
+			if (btn == driver::ButtonId::ONBOARD && evt == driver::ButtonEvent::CLICK) {
 				this->toggle();
-				return true; // we consumed this event
 			}
-			return false; // not our button, let it pass through
+			if (btn == driver::ButtonId::ONBOARD) return true;	// we consum all events for this button
+			else return false; 									// not our button, let it pass through
 		},
 		pixelino::driver::HandlerPriority::HIGH_PRIORITY
 	);
