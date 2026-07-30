@@ -102,16 +102,16 @@ void ServiceCLI::tick(void) {
 		char c = Serial.read();
 
 		if (c == '\n') {
-			//Serial.println();
+			Serial.println();
 			
 			if (m_inputBuffer.length() > 0) {
+				core::SystemLogger::getInstance().setParsingMode(true);
 				m_cli.parse(m_inputBuffer);
+				core::SystemLogger::getInstance().setParsingMode(false);
 				m_inputBuffer = ""; // Reset buffer
 			}
-
-			if (m_isActive) {
-				Serial.print("\nserviceCLI-esp32> ");
-			}
+			
+			Serial.print("serviceCLI-esp32> ");
 		}
 		// handle backspace (0x08 / '\b' or 0x7F / DEL)
 		else if (c == '\b' || c == 0x7F) {

@@ -51,6 +51,7 @@ public:
     void operator=(const SystemLogger&) = delete;
 
     void setServiceMode(bool enabled) { m_serviceMode = enabled; }
+    void setParsingMode(bool enabled) { m_parsingMode = enabled; }
 
 	// log manipulation functions
     void printLogHistory() const;
@@ -72,6 +73,7 @@ private:
     size_t m_count = 0;		// total counted log entries
 
     bool m_serviceMode = false;
+    bool m_parsingMode = false;
 };
 
 } // namespace pixelino::core

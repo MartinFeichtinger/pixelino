@@ -23,11 +23,12 @@ void SystemLogger::logError(ErrorCode code,  ErrorMode mode) {
 
 	// serial print if live output enabled
 	if ((m_serviceMode && mode == ErrorMode::LOG_LIVE) || mode >= ErrorMode::BRODCAST) {
-		if (m_serviceMode) Serial.print("\n");
+		if (!m_parsingMode) Serial.print("\n");
 		Serial.print("[LIVE_");
         Serial.print(levelToString(getErrorLevel(code)));
-        Serial.print("] ");
+        Serial.print("]\t");
         Serial.println(getErrorMessage(code));
+		if (!m_parsingMode) Serial.print("serviceCLI-esp32> ");
 	}
 }
 
