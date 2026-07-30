@@ -40,7 +40,7 @@ void ButtonManager::begin() {
 		}, &binding);
 
 		// long press event (stateless lambda!)
-		binding.button.attachDuringLongPress([](void* ctx) {
+		binding.button.attachLongPressStart([](void* ctx) {
 			ButtonBinding* b = static_cast<ButtonBinding*>(ctx);
 			if (b && b->mgr) {
 				b->mgr->dispatchEvent(b->id, ButtonEvent::LONG_PRESS);
