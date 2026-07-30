@@ -69,6 +69,10 @@ void SystemLogger::printLogHistory() const {
         size_t index = (tail + i) % max_log_entries;
         const SystemLogEntry& entry = m_log[index];
 
+		printFormattedTimestamp(entry.timestamp);
+		Serial.print(" ");
+
+
         switch (entry.source) {
             case LogSource::ERROR:
 				// change serial output color dependig on error (ascii escape sequences)
@@ -76,8 +80,7 @@ void SystemLogger::printLogHistory() const {
 				else if (getErrorLevel(entry.payload.error.code) == ErrorLevel::WARNING) Serial.printf("\e[33m");	// yellow
 				else if (getErrorLevel(entry.payload.error.code) == ErrorLevel::INFO) Serial.printf("\e[1m]");		// bold
 
-                Serial.printf("[%08lu] [%s] \t %s\n",
-					entry.timestamp,
+                Serial.printf("[%s] \t %s\n",
                     levelToString(getErrorLevel(entry.payload.error.code)),
                     getErrorMessage(entry.payload.error.code));
 
@@ -86,20 +89,17 @@ void SystemLogger::printLogHistory() const {
 
 			case LogSource::SYSTEM:
 				if (entry.payload.system.event == SystemEvent::ERROR_MODE_CHANGED) {
-					Serial.printf("[%08lu] [SYSTEM] \t %s TO %s\n",
-						entry.timestamp,
+					Serial.printf("[SYSTEM] \t %s TO %s\n",
 						getSystemEventMessage(entry.payload.system.event),
 						modeToString(entry.payload.system.errorMode));
 				} else {
-					Serial.printf("[%08lu] [SYSTEM] \t %s\n",
-						entry.timestamp,
+					Serial.printf("[SYSTEM] \t %s\n",
 						getSystemEventMessage(entry.payload.system.event));
 				}
 				break;
 
 			case LogSource::BUTTON:
-                Serial.printf("[%08lu] [BUTTON] \t %s -> %s\n",
-                    entry.timestamp,
+                Serial.printf("[BUTTON] \t %s -> %s\n",
                     buttonIdToString(entry.payload.button.id),
                     buttonEventToString(entry.payload.button.event));
                 break;
@@ -119,6 +119,18 @@ void SystemLogger::clearLog() {
 	m_count = 0;
 	logSystemEvent(SystemEvent::LOG_CLEARD);
 	Serial.println("error log cleared");
+}
+
+// helper function to format timestamp
+inline void SystemLogger::printFormattedTimestamp(uint32_t ms) const {
+    uint32_t seconds = ms / 1000;
+    uint32_t minutes = seconds / 60;
+    
+    uint32_t rem_seconds = seconds % 60;
+    uint32_t rem_ms = ms % 1000;
+
+    // output format: [MM:SS.mmm]
+    Serial.printf("[%02lu:%02lu.%03lu]", minutes, rem_seconds, rem_ms);
 }
 
 } // namespace pixelino::core

@@ -72,6 +72,8 @@ private:
     SystemLogEntry m_log[max_log_entries];
     size_t m_count = 0;		// total counted log entries
 
+    inline void printFormattedTimestamp(uint32_t ms) const;
+
     bool m_serviceMode = false;
     bool m_parsingMode = false;
 };
