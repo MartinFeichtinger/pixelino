@@ -29,9 +29,9 @@ enum class ErrorCode : std::uint8_t {
 // translates the 1-byte error code into a string on demand
 inline const char* getErrorMessage(ErrorCode code) {
     switch (code) {
-        case ErrorCode::PIXEL_OUT_OF_BOUND_X:	return "Display: Pixel out of bound x";
-        case ErrorCode::PIXEL_OUT_OF_BOUND_Y:   return "Display: Pixel out of bound y";
-        default:								return "Unknown Error";
+        case ErrorCode::PIXEL_OUT_OF_BOUND_X:	return "DISPLAY: PIXEL OUT OF BOUND X";
+        case ErrorCode::PIXEL_OUT_OF_BOUND_Y:   return "DISPLAY: PIXEL OUT OF BOUND Y";
+        default:								return "UNKNOWN ERROR";
     }
 }
 
