@@ -70,7 +70,7 @@ void ServiceCLI::activate(void) {
 	m_isActive = true;
 	digitalWrite(core::config::gpio::onboard_led, HIGH);
 	core::SystemLogger::getInstance().setServiceMode(true);
-	core::SystemLogger::getInstance().logSystemEvent(core::SystemEvent::SERVICE_CLI_ACTIVAED);
+	core::SystemLogger::getInstance().logSystemEvent(core::SystemEvent::SERVICE_CLI_ACTIVATED);
 	Serial.println("\n====================================== serviceCLI activated =======================================");
 	Serial.print("serviceCLI-esp32> ");
 }
@@ -81,7 +81,7 @@ void ServiceCLI::deactivate(void) {
 	m_isActive = false;
 	digitalWrite(core::config::gpio::onboard_led, LOW);
 	core::SystemLogger::getInstance().setServiceMode(false);
-	core::SystemLogger::getInstance().logSystemEvent(core::SystemEvent::SERVICE_CLI_DEACTIVED);
+	core::SystemLogger::getInstance().logSystemEvent(core::SystemEvent::SERVICE_CLI_DEACTIVATED);
 	Serial.println("===================================== serviceCLI deactivated ======================================");
 	Serial.println();
 }
@@ -102,7 +102,7 @@ void ServiceCLI::tick(void) {
 		char c = Serial.read();
 
 		if (c == '\n') {
-			Serial.println();
+			//Serial.println();
 			
 			if (m_inputBuffer.length() > 0) {
 				m_cli.parse(m_inputBuffer);
@@ -110,7 +110,7 @@ void ServiceCLI::tick(void) {
 			}
 
 			if (m_isActive) {
-				Serial.print("serviceCLI-esp32> ");
+				Serial.print("\nserviceCLI-esp32> ");
 			}
 		}
 		// handle backspace (0x08 / '\b' or 0x7F / DEL)
