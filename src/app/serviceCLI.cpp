@@ -70,6 +70,7 @@ void ServiceCLI::activate(void) {
 	m_isActive = true;
 	digitalWrite(core::config::gpio::onboard_led, HIGH);
 	core::SystemLogger::getInstance().setServiceMode(true);
+	core::SystemLogger::getInstance().logSystemEvent(core::SystemEvent::SERVICE_CLI_ACTIVAED);
 	Serial.println("\n====================================== serviceCLI activated =======================================");
 	Serial.print("serviceCLI-esp32> ");
 }
@@ -80,6 +81,7 @@ void ServiceCLI::deactivate(void) {
 	m_isActive = false;
 	digitalWrite(core::config::gpio::onboard_led, LOW);
 	core::SystemLogger::getInstance().setServiceMode(false);
+	core::SystemLogger::getInstance().logSystemEvent(core::SystemEvent::SERVICE_CLI_DEACTIVED);
 	Serial.println("===================================== serviceCLI deactivated ======================================");
 	Serial.println();
 }
