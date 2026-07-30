@@ -8,8 +8,8 @@ enum class SystemEvent : std::uint8_t {
 	SETUP,
 	LOG_CLEARD,
 	ERROR_MODE_CHANGED,
-	SERVICE_CLI_ACTIVAED,
-	SERVICE_CLI_DEACTIVED
+	SERVICE_CLI_ACTIVATED,
+	SERVICE_CLI_DEACTIVATED
 };
 
 inline const char* getSystemEventMessage(SystemEvent event) {
@@ -17,8 +17,8 @@ inline const char* getSystemEventMessage(SystemEvent event) {
 		case SystemEvent::SETUP:					return "SETUP FINISHED";
 		case SystemEvent::LOG_CLEARD:				return "LOG CLEARD";
 		case SystemEvent::ERROR_MODE_CHANGED:		return "ERROR_HANDLER CHANGED MODE";
-		case SystemEvent::SERVICE_CLI_ACTIVAED:		return "SERVICE_CLI ACTIVAED";
-		case SystemEvent::SERVICE_CLI_DEACTIVED:	return "SERVICE_CLI DEACTIVED";
+		case SystemEvent::SERVICE_CLI_ACTIVATED:	return "SERVICE_CLI ACTIVATED";
+		case SystemEvent::SERVICE_CLI_DEACTIVATED:	return "SERVICE_CLI DEACTIVATED";
 		default:									return "UNKNOWN EVENT";
 	}
 }
