@@ -3,6 +3,7 @@
 #include "core/types.hpp"
 #include "core/error_handler.hpp"
 #include "core/error_types.hpp"
+#include "core/system_logger.hpp"
 #include "driver/display.hpp"
 #include "driver/button_manager.hpp"
 
@@ -70,7 +71,7 @@ void ServiceCLI::activate(void) {
 
     m_isActive = true;
     digitalWrite(core::config::gpio::onboard_led, HIGH);
-    core::ErrorHandler::getInstance().setLiveOutput(true);
+    core::SystemLogger::getInstance().setServiceMode(true);
     Serial.println("\n====================================== serviceCLI activated =======================================");
     Serial.print("serviceCLI-esp32> ");
 }
@@ -80,7 +81,7 @@ void ServiceCLI::deactivate(void) {
 
     m_isActive = false;
     digitalWrite(core::config::gpio::onboard_led, LOW);
-    core::ErrorHandler::getInstance().setLiveOutput(false);
+    core::SystemLogger::getInstance().setServiceMode(false);
     Serial.println("===================================== serviceCLI deactivated ======================================");
 	Serial.println();
 }
@@ -180,10 +181,10 @@ void ServiceCLI::logCallback(cmd* c)
     String action = cmd.getArgument("action").getValue();
 
     if (action.equalsIgnoreCase("show")) {
-        core::ErrorHandler::getInstance().printLogHistory();
+        core::SystemLogger::getInstance().printLogHistory();
     }
     else if(action.equalsIgnoreCase("clear")) {
-        core::ErrorHandler::getInstance().clearLog();
+        core::SystemLogger::getInstance().clearLog();
     }
 }
 

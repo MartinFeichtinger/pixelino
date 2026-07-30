@@ -17,27 +17,19 @@ public:
     ErrorHandler(const ErrorHandler&) = delete;
     void operator=(const ErrorHandler&) = delete;
 
-    // Configuration
+    // configuration
     void setMode(ErrorMode mode) { m_mode = mode; }
-    void setLiveOutput(bool enabled) { m_liveOutputEnabled = enabled; }
 	ErrorMode getMode() {return m_mode;}
 
+    // actual handler
     void handle(ErrorCode code);
-    void printLogHistory() const;
-    void clearLog();
 
 private:
     ErrorHandler() = default;
 
-    void haltSystem();
-
-    // 1-Byte per entry ring buffer
-    ErrorCode m_log[config::error::max_log_entries];
-    size_t m_head = 0;
-    size_t m_count = 0;
-
     ErrorMode m_mode = ErrorMode::LOG_LIVE;
-    bool m_liveOutputEnabled = false;
+
+    void haltSystem();
 };
 
 } // namespace pixelino::core

@@ -1,6 +1,6 @@
 #include "core/error_handler.hpp"
 #include "core/error_types.hpp"
-
+#include "core/system_logger.hpp"
 #include "driver/display.hpp"
 
 namespace pixelino::core {
@@ -10,23 +10,12 @@ void ErrorHandler::handle(ErrorCode code) {
         return;
     }
 
-    if (m_mode >= ErrorMode::LOG_ONLY) {
-        // save to 1-byte ring buffer
-        m_log[m_head] = code;
-        m_head = (m_head + 1) % config::error::max_log_entries;
-        m_count++;
-    }
-    
     ErrorLevel level = getErrorLevel(code);
 
-    if ((m_mode == ErrorMode::LOG_LIVE && m_liveOutputEnabled) || m_mode >= ErrorMode::BRODCAST) {
-
-        Serial.print("[");
-        Serial.print(levelToString(level));
-        Serial.print("] ");
-        Serial.println(getErrorMessage(code));
+    if (m_mode >= ErrorMode::LOG_ONLY) {
+        SystemLogger::getInstance().logError(code, m_mode);
     }
-
+    
     if ((level == ErrorLevel::FATAL && m_mode == ErrorMode::CRASH_ON_FATAL)
         || (level == ErrorLevel::ERROR && m_mode == ErrorMode::CRASH_ON_ERROR)
         || (level == ErrorLevel::WARNING && m_mode == ErrorMode::CRASH_ON_WARNING))  {
@@ -36,44 +25,14 @@ void ErrorHandler::handle(ErrorCode code) {
     }
 }
 
-void ErrorHandler::printLogHistory() const {
-    if (m_count == 0) {
-        Serial.println("error log is empty");
-        return;
-    }
-
-    size_t startIdx = (m_count >= config::error::max_log_entries) ? m_head : 0;
-	size_t loggedCount = (m_count <= config::error::max_log_entries) ? m_count : config::error::max_log_entries;
-
-    for (size_t i = 0; i < loggedCount; i++) {
-        size_t index = (startIdx + i) % config::error::max_log_entries;
-        ErrorCode code = m_log[index];
-
-        Serial.print(i + 1);
-        Serial.print(": [");
-        Serial.print(levelToString(getErrorLevel(code)));
-        Serial.print("] ");
-        Serial.println(getErrorMessage(code));
-    }
-
-	if (m_count > core::config::error::max_log_entries)
-	{
-		Serial.print("log overflowed: ");
-		Serial.print(m_count);
-		Serial.print(" ERRORS,");
-		Serial.print(core::config::error::max_log_entries);
-		Serial.println(" MAX_LOG_ENTRIES");
-	}
-}
-
-void ErrorHandler::clearLog() {
-    m_head = 0;
-    m_count = 0;
-    Serial.println("error log cleared");
-}
-
 void ErrorHandler::haltSystem() {
     Serial.println("\n*** FATAL ERROR: SYSTEM HALTED ***");
+
+    Serial.println("*** LOG HISTORY ***");
+    core::SystemLogger::getInstance().printLogHistory();
+
+    Serial.println("\n*** FATAL ERROR: SYSTEM HALTED ***");
+
     while (true) {
         delay(100);
     }

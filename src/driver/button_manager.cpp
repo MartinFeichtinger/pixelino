@@ -1,5 +1,6 @@
 #include "driver/button_manager.hpp"
 #include "core/config.hpp"
+#include "core/system_logger.hpp"
 #include <OneButton.h>
 
 namespace pixelino::driver {
@@ -38,23 +39,18 @@ void ButtonManager::begin() {
 			}
 		}, &binding);
 
-		// double click event (stateless lambda!)
-		binding.button.attachDoubleClick([](void* ctx) {
-			// cast the raw void* back into our ButtonBinding struct
-			ButtonBinding* b = static_cast<ButtonBinding*>(ctx);
-			if (b && b->mgr) {
-				b->mgr->dispatchEvent(b->id, ButtonEvent::DOUBLE_CLICK);
-			}
-		}, &binding);
-
 		// long press event (stateless lambda!)
 		binding.button.attachDuringLongPress([](void* ctx) {
 			ButtonBinding* b = static_cast<ButtonBinding*>(ctx);
 			if (b && b->mgr) {
-				b->mgr->dispatchEvent(b->id, ButtonEvent::PRESS_START);
+				b->mgr->dispatchEvent(b->id, ButtonEvent::LONG_PRESS);
 			}
 		}, &binding);
 	}
+	// add button observer for logging
+	addSystemObserver([](driver::ButtonId id, driver::ButtonEvent event) {
+		core::SystemLogger::getInstance().logButtonEvent(id, event);
+	});
 }
 
 void ButtonManager::tick() {
