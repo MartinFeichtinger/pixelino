@@ -1,9 +1,15 @@
 #include "core/error_handler.hpp"
 #include "core/error_types.hpp"
 #include "core/system_logger.hpp"
+#include "core/system_events.hpp"
 #include "driver/display.hpp"
 
 namespace pixelino::core {
+
+void ErrorHandler::setMode(ErrorMode mode) {
+    m_mode = mode;
+    SystemLogger::getInstance().logSystemEvent(SystemEvent::ERROR_MODE_CHANGED, mode);
+}
 
 void ErrorHandler::handle(ErrorCode code) {
     if (code == ErrorCode::NONE || m_mode == ErrorMode::SILENT) {

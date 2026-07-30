@@ -37,8 +37,7 @@ private:
 	static void helpCallback(cmd* c);
     static void displayCallback(cmd* c);
     static void logCallback(cmd* c);
-    static void setErrorModeCallback(cmd* c);
-    static void getErrorModeCallback(cmd* c);
+    static void errorHandlerCallback(cmd* c);
     static void cliErrorCallback(cmd_error* e);
 };
 

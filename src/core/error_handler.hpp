@@ -18,7 +18,7 @@ public:
     void operator=(const ErrorHandler&) = delete;
 
     // configuration
-    void setMode(ErrorMode mode) { m_mode = mode; }
+    void setMode(ErrorMode mode);
 	ErrorMode getMode() {return m_mode;}
 
     // actual handler

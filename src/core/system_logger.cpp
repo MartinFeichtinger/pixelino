@@ -38,6 +38,14 @@ void SystemLogger::logSystemEvent(SystemEvent event) {
 	log(entry);
 }
 
+void SystemLogger::logSystemEvent(SystemEvent event, ErrorMode mode) {
+    SystemLogEntry entry;
+    entry.source = LogSource::SYSTEM;
+    entry.payload.system.event = event;
+    entry.payload.system.errorMode = mode;
+    log(entry);
+}
+
 void SystemLogger::logButtonEvent(driver::ButtonId id, driver::ButtonEvent event) {
 	SystemLogEntry entry;
 	entry.source = LogSource::BUTTON;
@@ -76,9 +84,16 @@ void SystemLogger::printLogHistory() const {
                 break;
 
 			case LogSource::SYSTEM:
-                Serial.printf("[%08lu] [SYSTEM] \t %s\n",
-                    entry.timestamp,
-                    getSystemEventMessage(entry.payload.system.event));
+				if (entry.payload.system.event == SystemEvent::ERROR_MODE_CHANGED) {
+					Serial.printf("[%08lu] [SYSTEM] \t %s TO %s\n",
+						entry.timestamp,
+						getSystemEventMessage(entry.payload.system.event),
+						modeToString(entry.payload.system.errorMode));
+				} else {
+					Serial.printf("[%08lu] [SYSTEM] \t %s\n",
+						entry.timestamp,
+						getSystemEventMessage(entry.payload.system.event));
+				}
 				break;
 
 			case LogSource::BUTTON:

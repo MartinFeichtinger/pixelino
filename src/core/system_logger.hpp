@@ -33,6 +33,9 @@ struct SystemLogEntry {
 
 		struct {
 			SystemEvent event;
+            union {
+                ErrorMode errorMode;
+            };
 		} system;
     } payload;
 };
@@ -56,6 +59,7 @@ public:
     // logging from diffenent souces
 	void logError(ErrorCode code, ErrorMode mode);
 	void logSystemEvent(SystemEvent event);
+    void logSystemEvent(SystemEvent event, ErrorMode mode);
     void logButtonEvent(driver::ButtonId id, driver::ButtonEvent event);
 
 private:
