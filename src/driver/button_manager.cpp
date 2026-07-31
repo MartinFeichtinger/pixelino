@@ -50,9 +50,9 @@ void ButtonManager::begin() {
 	}
 	// add button observer for logging
 	addSystemObserver([](driver::ButtonId id, driver::ButtonEvent event) {
-    core::SystemLogger::getInstance().logDriverEvent(
-        "BUTTON",						// tag pointer
-        buttonEventToMessage(id, event)	// message pointer
+        core::SystemLogger::getInstance().logDriverEvent(
+            "BUTTON",						// tag pointer
+            buttonEventToMessage(id, event)	// message pointer
         );
     });
 
