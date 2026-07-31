@@ -27,8 +27,8 @@ void SystemLogger::logError(ErrorCode code,  ErrorMode mode) {
 		Serial.print("[LIVE_");
         Serial.print(levelToString(getErrorLevel(code)));
         Serial.print("]\t");
-        Serial.println(getErrorMessage(code));
-		if (!m_parsingMode) Serial.print("serviceCLI-esp32> ");
+        Serial.print(getErrorMessage(code));
+		if (!m_parsingMode && m_serviceMode) Serial.print("\nserviceCLI-esp32> ");
 	}
 }
 
