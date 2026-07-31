@@ -3,7 +3,6 @@
 #include "core/error_types.hpp"
 #include "core/system_events.hpp"
 #include <cstdint>
-#include <Arduino.h>
 
 namespace pixelino::core {
 
@@ -19,7 +18,7 @@ struct SystemLogEntry {
     
     // Union size is determined by the largest struct inside it.
     // error: 1 byte, system: 2 bytes, driver: 8 bytes
-    // Total struct size: 4 (time) + 1 (source) + 8 (union) + 1 (padding) = 14 bytes per entry.
+    // Total struct size: 4 (time) + 1 (source) + 8 (union) + 3 (padding) = 16 bytes per entry.
     union {        
         struct {
             ErrorCode code;
@@ -68,9 +67,9 @@ private:
 
 	void log(SystemLogEntry entry);
 
-    static constexpr size_t max_log_entries = 32;
+    static constexpr std::uint8_t max_log_entries = 32;
     SystemLogEntry m_log[max_log_entries];
-    size_t m_count = 0;		// total counted log entries
+    std::uint16_t m_count = 0;		// total counted log entries
 
     inline void printFormattedTimestamp(uint32_t ms) const;
 

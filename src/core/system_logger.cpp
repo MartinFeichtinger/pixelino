@@ -2,13 +2,14 @@
 #include "core/error_types.hpp"
 #include "core/system_events.hpp"
 #include <cstdint>
+#include <Arduino.h>
 
 namespace pixelino::core {
 
 void SystemLogger::log(SystemLogEntry entry) {
 	entry.timestamp = millis();
 
-	size_t head = m_count % max_log_entries;
+	std::uint8_t head = m_count % max_log_entries;
 	m_log[head] = entry;
 	m_count++;
 }
@@ -60,12 +61,12 @@ void SystemLogger::printLogHistory() const {
         return;
     }
 
-	size_t head = m_count % max_log_entries;
-	size_t logs = (m_count <= max_log_entries) ? m_count : max_log_entries; // amount of curretly stored log entries
-    size_t tail = (m_count > max_log_entries) ? head : 0;
+	std::uint8_t head = m_count % max_log_entries;
+	std::uint8_t logs = (m_count <= max_log_entries) ? m_count : max_log_entries; // amount of curretly stored log entries
+    std::uint8_t tail = (m_count > max_log_entries) ? head : 0;
 
-    for (size_t i = 0; i < logs; i++) {
-        size_t index = (tail + i) % max_log_entries;
+    for (std::uint8_t i = 0; i < logs; i++) {
+        std::uint8_t index = (tail + i) % max_log_entries;
         const SystemLogEntry& entry = m_log[index];
 
 		printFormattedTimestamp(entry.timestamp);
