@@ -110,8 +110,7 @@ void ServiceCLI::tick(void) {
 				core::SystemLogger::getInstance().setParsingMode(false);
 				m_inputBuffer = ""; // Reset buffer
 			}
-			
-			Serial.print("serviceCLI-esp32> ");
+			if (m_isActive) Serial.print("serviceCLI-esp32> ");
 		}
 		// handle backspace (0x08 / '\b' or 0x7F / DEL)
 		else if (c == '\b' || c == 0x7F) {
