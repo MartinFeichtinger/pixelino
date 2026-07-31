@@ -118,7 +118,7 @@ void SystemLogger::printLogHistory() const {
 void SystemLogger::clearLog() {
 	m_count = 0;
 	logSystemEvent(SystemEvent::LOG_CLEARD);
-	Serial.println("error log cleared");
+	Serial.println("system log cleared");
 }
 
 // helper function to format timestamp
