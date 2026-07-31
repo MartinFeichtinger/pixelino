@@ -2,16 +2,15 @@
 
 #include "core/error_types.hpp"
 #include "core/system_events.hpp"
-#include "driver/button_types.hpp"
 #include <cstdint>
 #include <Arduino.h>
 
 namespace pixelino::core {
 
 enum class LogSource : std::uint8_t {
-    BUTTON,
     ERROR,
-    SYSTEM
+    SYSTEM,
+    DRIVER
 };
 
 struct SystemLogEntry {
@@ -19,14 +18,9 @@ struct SystemLogEntry {
     LogSource source;
     
     // Union size is determined by the largest struct inside it.
-    // Button: 2 bytes. Error: 1 byte.
-    // Total struct size: 4 (time) + 1 (source) + 2 (union) + 1 (padding) = 8 bytes per entry.
-    union {
-        struct {
-            driver::ButtonId id;
-            driver::ButtonEvent event;
-        } button;
-        
+    // error: 1 byte, system: 2 bytes, driver: 8 bytes
+    // Total struct size: 4 (time) + 1 (source) + 8 (union) + 1 (padding) = 14 bytes per entry.
+    union {        
         struct {
             ErrorCode code;
         } error;
@@ -37,6 +31,12 @@ struct SystemLogEntry {
                 ErrorMode errorMode;
             };
 		} system;
+
+        struct {
+            const char* tag; 
+            const char* message;
+        } driver;
+
     } payload;
 };
 
@@ -61,7 +61,7 @@ public:
 	void logError(ErrorCode code, ErrorMode mode);
 	void logSystemEvent(SystemEvent event);
     void logSystemEvent(SystemEvent event, ErrorMode mode);
-    void logButtonEvent(driver::ButtonId id, driver::ButtonEvent event);
+    void logDriverEvent(const char* tag, const char* message);
 
 private:
     SystemLogger() = default;

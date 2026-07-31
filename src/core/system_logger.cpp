@@ -1,7 +1,6 @@
 #include "core/system_logger.hpp"
 #include "core/error_types.hpp"
 #include "core/system_events.hpp"
-#include "driver/button_types.hpp"
 #include <cstdint>
 
 namespace pixelino::core {
@@ -47,12 +46,12 @@ void SystemLogger::logSystemEvent(SystemEvent event, ErrorMode mode) {
     log(entry);
 }
 
-void SystemLogger::logButtonEvent(driver::ButtonId id, driver::ButtonEvent event) {
-	SystemLogEntry entry;
-	entry.source = LogSource::BUTTON;
-	entry.payload.button.id = id;
-	entry.payload.button.event = event;
-	log(entry);
+void SystemLogger::logDriverEvent(const char* tag, const char* message) {
+    SystemLogEntry entry;
+    entry.source = LogSource::DRIVER;
+    entry.payload.driver.tag = tag;
+    entry.payload.driver.message = message;
+    log(entry);
 }
 
 void SystemLogger::printLogHistory() const {
@@ -98,10 +97,10 @@ void SystemLogger::printLogHistory() const {
 				}
 				break;
 
-			case LogSource::BUTTON:
-                Serial.printf("[BUTTON] \t %s -> %s\n",
-                    buttonIdToString(entry.payload.button.id),
-                    buttonEventToString(entry.payload.button.event));
+			case LogSource::DRIVER:
+                Serial.printf("[%s] \t %s\n",
+                    entry.payload.driver.tag,
+                    entry.payload.driver.message);
                 break;
         }
     }

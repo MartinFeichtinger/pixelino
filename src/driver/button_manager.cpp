@@ -49,8 +49,11 @@ void ButtonManager::begin() {
 	}
 	// add button observer for logging
 	addSystemObserver([](driver::ButtonId id, driver::ButtonEvent event) {
-		core::SystemLogger::getInstance().logButtonEvent(id, event);
-	});
+    core::SystemLogger::getInstance().logDriverEvent(
+        "BUTTON",						// tag pointer
+        buttonEventToMessage(id, event)	// message pointer
+    );
+});
 }
 
 void ButtonManager::tick() {
@@ -88,6 +91,29 @@ void ButtonManager::dispatchEvent(ButtonId id, ButtonEvent event) {
     if (m_activeCallback) {
         m_activeCallback(id, event);
     }
+}
+
+const char* ButtonManager::buttonEventToMessage(ButtonId id, ButtonEvent event) {
+    // array dimensions match enum sizes: 9 Buttons x 3 Events
+    static const char* const MESSAGES[9][3] = {
+        /* KEY_UP     */ { "KEY_UP -> PRESS",     "KEY_UP -> CLICK",     "KEY_UP -> LONG_PRESS" },
+        /* KEY_DOWN   */ { "KEY_DOWN -> PRESS",   "KEY_DOWN -> CLICK",   "KEY_DOWN -> LONG_PRESS" },
+        /* KEY_LEFT   */ { "KEY_LEFT -> PRESS",   "KEY_LEFT -> CLICK",   "KEY_LEFT -> LONG_PRESS" },
+        /* KEY_RIGHT  */ { "KEY_RIGHT -> PRESS",  "KEY_RIGHT -> CLICK",  "KEY_RIGHT -> LONG_PRESS" },
+        /* KEY_A      */ { "KEY_A -> PRESS",      "KEY_A -> CLICK",      "KEY_A -> LONG_PRESS" },
+        /* KEY_B      */ { "KEY_B -> PRESS",      "KEY_B -> CLICK",      "KEY_B -> LONG_PRESS" },
+        /* KEY_SELECT */ { "KEY_SELECT -> PRESS", "KEY_SELECT -> CLICK", "KEY_SELECT -> LONG_PRESS" },
+        /* KEY_START  */ { "KEY_START -> PRESS",  "KEY_START -> CLICK",  "KEY_START -> LONG_PRESS" },
+        /* ONBOARD    */ { "ONBOARD -> PRESS",    "ONBOARD -> CLICK",    "ONBOARD -> LONG_PRESS" }
+    };
+
+    auto idIdx = static_cast<size_t>(id);
+    auto evtIdx = static_cast<size_t>(event);
+
+    if (idIdx < 9 && evtIdx < 3) {
+        return MESSAGES[idIdx][evtIdx];
+    }
+    return "UNKNOWN EVENT";
 }
 
 } // namespcae pixelino::driver
