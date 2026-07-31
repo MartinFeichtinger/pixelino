@@ -1,6 +1,5 @@
 #include "core/config.hpp"
 #include "core/system_logger.hpp"
-#include "core/system_events.hpp"
 #include "driver/display.hpp"
 #include "driver/button_manager.hpp"
 #include "app/serviceCLI.hpp"
@@ -20,7 +19,7 @@ void setup() {
 	pixelino::app::ServiceCLI::getInstance().begin(buttonManager);
 
 	// log setup finish
-	pixelino::core::SystemLogger::getInstance().logSystemEvent(pixelino::core::SystemEvent::SETUP_FINISHED);
+	pixelino::core::SystemLogger::getInstance().logEvent(pixelino::core::LogSource::SYSTEM, "SETUP FINISHED");
 }
 
 void loop() {

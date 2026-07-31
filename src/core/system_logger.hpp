@@ -1,66 +1,53 @@
 #pragma once
 
 #include "core/error_types.hpp"
-#include "core/system_events.hpp"
 #include <cstdint>
 
 namespace pixelino::core {
 
 enum class LogSource : std::uint8_t {
-    ERROR,
+    ERROR_HANDLER,
     SYSTEM,
-    DRIVER
+    DRIVER,
+    APP,
 };
 
 struct SystemLogEntry {
     uint32_t timestamp;
     LogSource source;
-    
-    // Union size is determined by the largest struct inside it.
-    // error: 1 byte, system: 2 bytes, driver: 8 bytes
-    // Total struct size: 4 (time) + 1 (source) + 8 (union) + 3 (padding) = 16 bytes per entry.
-    union {        
+
+    union {
         struct {
             ErrorCode code;
         } error;
 
-		struct {
-			SystemEvent event;
-            union {
-                ErrorMode errorMode;
-            };
-		} system;
-
         struct {
             const char* tag; 
             const char* message;
-        } driver;
+        } event;
 
     } payload;
 };
 
 class SystemLogger {
 public:
-    static SystemLogger& getInstance() {
-        static SystemLogger instance;
-        return instance;
-    }
-
+    // singelton definition
+    static SystemLogger& getInstance() { static SystemLogger instance; return instance; }
     SystemLogger(const SystemLogger&) = delete;
     void operator=(const SystemLogger&) = delete;
 
-    void setServiceMode(bool enabled) { m_serviceMode = enabled; }
-    void setParsingMode(bool enabled) { m_parsingMode = enabled; }
+    // special logger used by the error handler (for error logging use the error handler!)
+	void logError(ErrorCode code, ErrorMode mode);  
 
-	// log manipulation functions
+    // universal logging function
+    void logEvent(LogSource source, const char* message);
+    void logEvent(LogSource source, const char* tag, const char* message);
     void printLogHistory() const;
     void clearLog();
 
-    // logging from diffenent souces
-	void logError(ErrorCode code, ErrorMode mode);
-	void logSystemEvent(SystemEvent event);
-    void logSystemEvent(SystemEvent event, ErrorMode mode);
-    void logDriverEvent(const char* tag, const char* message);
+    // relevant class states set via the serviceCLI modul for corect formatign
+    void setServiceMode(bool enabled) { m_serviceMode = enabled; }
+    void setParsingMode(bool enabled) { m_parsingMode = enabled; }
 
 private:
     SystemLogger() = default;
@@ -72,6 +59,7 @@ private:
     std::uint16_t m_count = 0;		// total counted log entries
 
     inline void printFormattedTimestamp(uint32_t ms) const;
+    static const char* logSourceToString(LogSource source);
 
     bool m_serviceMode = false;
     bool m_parsingMode = false;

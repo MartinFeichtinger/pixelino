@@ -57,6 +57,7 @@ void ServiceCLI::begin(driver::ButtonManager& buttonManager) {
 	errorCmd.setDescription("Manage error handling (getMode | setMode <silent, log_only, log_life, brodcast, crash_on_fatal, crash_on_error, crash_on_warning>).");
 
 	m_cli.setOnError(cliErrorCallback);
+	core::SystemLogger::getInstance().logEvent(core::LogSource::APP, "CLI", "CLI INITIATED");
 }
 
 void ServiceCLI::activate(void) {
@@ -70,7 +71,7 @@ void ServiceCLI::activate(void) {
 	m_isActive = true;
 	digitalWrite(core::config::gpio::onboard_led, HIGH);
 	core::SystemLogger::getInstance().setServiceMode(true);
-	core::SystemLogger::getInstance().logSystemEvent(core::SystemEvent::SERVICE_CLI_ACTIVATED);
+	core::SystemLogger::getInstance().logEvent(core::LogSource::APP, "CLI", "CLI ACTIVATED");
 	Serial.println("\n====================================== serviceCLI activated =======================================");
 	Serial.print("serviceCLI-esp32> ");
 }
@@ -81,7 +82,7 @@ void ServiceCLI::deactivate(void) {
 	m_isActive = false;
 	digitalWrite(core::config::gpio::onboard_led, LOW);
 	core::SystemLogger::getInstance().setServiceMode(false);
-	core::SystemLogger::getInstance().logSystemEvent(core::SystemEvent::SERVICE_CLI_DEACTIVATED);
+	core::SystemLogger::getInstance().logEvent(core::LogSource::APP, "CLI", "CLI DEACTIVATED");
 	Serial.println("===================================== serviceCLI deactivated ======================================");
 	Serial.println();
 }

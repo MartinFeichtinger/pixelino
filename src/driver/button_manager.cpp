@@ -1,7 +1,6 @@
 #include "driver/button_manager.hpp"
 #include "core/config.hpp"
 #include "core/system_logger.hpp"
-#include "core/system_events.hpp"
 #include <OneButton.h>
 
 namespace pixelino::driver {
@@ -50,13 +49,14 @@ void ButtonManager::begin() {
 	}
 	// add button observer for logging
 	addSystemObserver([](driver::ButtonId id, driver::ButtonEvent event) {
-        core::SystemLogger::getInstance().logDriverEvent(
+        core::SystemLogger::getInstance().logEvent(
+            core::LogSource::DRIVER,        // log source
             "BUTTON",						// tag pointer
             buttonEventToMessage(id, event)	// message pointer
         );
     });
 
-    core::SystemLogger::getInstance().logSystemEvent(core::SystemEvent::BUTTON_INIT);
+    core::SystemLogger::getInstance().logEvent(core::LogSource::DRIVER, "BUTTON", "BUTTON INITIATED");
 }
 
 void ButtonManager::tick() {

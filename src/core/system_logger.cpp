@@ -1,23 +1,14 @@
 #include "core/system_logger.hpp"
 #include "core/error_types.hpp"
-#include "core/system_events.hpp"
 #include <cstdint>
 #include <Arduino.h>
 
 namespace pixelino::core {
 
-void SystemLogger::log(SystemLogEntry entry) {
-	entry.timestamp = millis();
-
-	std::uint8_t head = m_count % max_log_entries;
-	m_log[head] = entry;
-	m_count++;
-}
-
 void SystemLogger::logError(ErrorCode code,  ErrorMode mode) {	
 	// error logging
 	SystemLogEntry entry;
-	entry.source = LogSource::ERROR;
+	entry.source = LogSource::ERROR_HANDLER;
 	entry.payload.error.code = code;
 	log(entry);
 
@@ -32,27 +23,24 @@ void SystemLogger::logError(ErrorCode code,  ErrorMode mode) {
 	}
 }
 
-void SystemLogger::logSystemEvent(SystemEvent event) {
-	SystemLogEntry entry;
-	entry.source = LogSource::SYSTEM;
-	entry.payload.system.event = event;
-	log(entry);
+void SystemLogger::logEvent(LogSource source, const char* message) {
+	logEvent(source, logSourceToString(source), message);
 }
 
-void SystemLogger::logSystemEvent(SystemEvent event, ErrorMode mode) {
+void SystemLogger::logEvent(LogSource source, const char* tag, const char* message) {
     SystemLogEntry entry;
-    entry.source = LogSource::SYSTEM;
-    entry.payload.system.event = event;
-    entry.payload.system.errorMode = mode;
+    entry.source = source;
+    entry.payload.event.tag = tag;
+    entry.payload.event.message = message;
     log(entry);
 }
 
-void SystemLogger::logDriverEvent(const char* tag, const char* message) {
-    SystemLogEntry entry;
-    entry.source = LogSource::DRIVER;
-    entry.payload.driver.tag = tag;
-    entry.payload.driver.message = message;
-    log(entry);
+void SystemLogger::log(SystemLogEntry entry) {
+	entry.timestamp = millis();
+
+	std::uint8_t head = m_count % max_log_entries;
+	m_log[head] = entry;
+	m_count++;
 }
 
 void SystemLogger::printLogHistory() const {
@@ -69,41 +57,25 @@ void SystemLogger::printLogHistory() const {
         std::uint8_t index = (tail + i) % max_log_entries;
         const SystemLogEntry& entry = m_log[index];
 
-		printFormattedTimestamp(entry.timestamp);
-		Serial.print(" ");
+		if (entry.source == LogSource::ERROR_HANDLER) {
+			// change serial output color dependig on error (using ascii escape sequences)
+			if (getErrorLevel(entry.payload.error.code) >= ErrorLevel::ERROR) Serial.printf("\e[31m");			// red
+			else if (getErrorLevel(entry.payload.error.code) == ErrorLevel::WARNING) Serial.printf("\e[33m");	// yellow
+			else if (getErrorLevel(entry.payload.error.code) == ErrorLevel::INFO) Serial.printf("\e[1m]");		// bold
 
+			printFormattedTimestamp(entry.timestamp);
+			Serial.printf(" [%s] \t %s\n",
+				levelToString(getErrorLevel(entry.payload.error.code)),
+				getErrorMessage(entry.payload.error.code));
 
-        switch (entry.source) {
-            case LogSource::ERROR:
-				// change serial output color dependig on error (ascii escape sequences)
-				if (getErrorLevel(entry.payload.error.code) >= ErrorLevel::ERROR) Serial.printf("\e[31m");			// red
-				else if (getErrorLevel(entry.payload.error.code) == ErrorLevel::WARNING) Serial.printf("\e[33m");	// yellow
-				else if (getErrorLevel(entry.payload.error.code) == ErrorLevel::INFO) Serial.printf("\e[1m]");		// bold
-
-                Serial.printf("[%s] \t %s\n",
-                    levelToString(getErrorLevel(entry.payload.error.code)),
-                    getErrorMessage(entry.payload.error.code));
-
-				Serial.printf("\e[0m");	// reset serial output format
-                break;
-
-			case LogSource::SYSTEM:
-				if (entry.payload.system.event == SystemEvent::ERROR_MODE_CHANGED) {
-					Serial.printf("[SYSTEM] \t %s TO %s\n",
-						getSystemEventMessage(entry.payload.system.event),
-						modeToString(entry.payload.system.errorMode));
-				} else {
-					Serial.printf("[SYSTEM] \t %s\n",
-						getSystemEventMessage(entry.payload.system.event));
-				}
-				break;
-
-			case LogSource::DRIVER:
-                Serial.printf("[%s] \t %s\n",
-                    entry.payload.driver.tag,
-                    entry.payload.driver.message);
-                break;
-        }
+			Serial.printf("\e[0m");	// reset serial output format
+		}
+		else {
+			printFormattedTimestamp(entry.timestamp);
+			Serial.printf(" [%s] \t %s\n",
+				entry.payload.event.tag,
+				entry.payload.event.message);
+		}
     }
 	if (m_count > max_log_entries)
 	{
@@ -117,7 +89,7 @@ void SystemLogger::printLogHistory() const {
 
 void SystemLogger::clearLog() {
 	m_count = 0;
-	logSystemEvent(SystemEvent::LOG_CLEARD);
+	logEvent(LogSource::SYSTEM, "SYSTEM_LOG CLEARED");
 	Serial.println("system log cleared");
 }
 
@@ -132,5 +104,16 @@ inline void SystemLogger::printFormattedTimestamp(uint32_t ms) const {
     // output format: [MM:SS.mmm]
     Serial.printf("[%02lu:%02lu.%03lu]", minutes, rem_seconds, rem_ms);
 }
+
+const char* SystemLogger::logSourceToString(LogSource source) {
+	switch (source) {
+		case LogSource::ERROR_HANDLER:	return "ERR_HNDL";
+		case LogSource::SYSTEM: 		return "SYSTEM";
+		case LogSource::DRIVER: 		return "DRIVER";
+		case LogSource::APP:			return "APP";
+		default:						return "UNKN";
+	}
+}
+
 
 } // namespace pixelino::core

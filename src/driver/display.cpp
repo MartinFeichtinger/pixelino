@@ -23,22 +23,22 @@ void Display::begin() {
     core::config::display::init(m_leds);
 	FastLED.setDither(BINARY_DITHER);
   	FastLED.setBrightness(core::config::display::brightness);
-	core::SystemLogger::getInstance().logSystemEvent(core::SystemEvent::DISPLAY_INIT);
+	core::SystemLogger::getInstance().logEvent(core::LogSource::DRIVER, "DISPLAY", "DISPLAY INITIATED");
 }
 
 void Display::show() {
-	core::SystemLogger::getInstance().logDriverEvent("DISPLAY", "SHOWED OUT_BUFF");
+	core::SystemLogger::getInstance().logEvent(core::LogSource::DRIVER, "DISPLAY", "SHOWED OUT_BUFF");
 	FastLED.show();
 }
 
 // clears the m_leds buffer
 void Display::clear() {
-	core::SystemLogger::getInstance().logDriverEvent("DISPLAY", "CLEARED OUT_BUFF");
+	core::SystemLogger::getInstance().logEvent(core::LogSource::DRIVER, "DISPLAY", "CLEARED OUT_BUFF");
 	FastLED.clear();
 }
 
 void Display::fill(Color col) {
-	core::SystemLogger::getInstance().logDriverEvent("DISPLAY", "FILLED <COL> OUT_BUFF");
+	core::SystemLogger::getInstance().logEvent(core::LogSource::DRIVER, "DISPLAY", "FILLED <COL> OUT_BUFF");
 	fill_solid(m_leds, core::config::display::num_leds, CRGB(col.r, col.g, col.b));
 }
 
@@ -52,7 +52,7 @@ void Display::setPixel(Position pos, Color col) {
 
 void Display::setPixel(uint8_t x, uint8_t y, Color col) {
 	if (x < core::config::display::width && y < core::config::display::height) {
-		core::SystemLogger::getInstance().logDriverEvent("DISPLAY", "SET_PIXEL <POS><COL> OUT_BUFF");
+		core::SystemLogger::getInstance().logEvent(core::LogSource::DRIVER, "DISPLAY", "SET_PIXEL <POS><COL> OUT_BUFF");
 		std::uint8_t ledIndex = getIndex(x, y);
 		m_leds[ledIndex] = CRGB(col.r, col.g, col.b);
 	}
