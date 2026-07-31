@@ -20,7 +20,7 @@ void setup() {
 	pixelino::app::ServiceCLI::getInstance().begin(buttonManager);
 
 	// log setup finish
-	pixelino::core::SystemLogger::getInstance().logSystemEvent(pixelino::core::SystemEvent::SETUP);
+	pixelino::core::SystemLogger::getInstance().logSystemEvent(pixelino::core::SystemEvent::SETUP_FINISHED);
 }
 
 void loop() {

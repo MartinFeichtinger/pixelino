@@ -1,10 +1,11 @@
 #include "display.hpp"
-#include <Arduino.h>
-#include <FastLED.h>
 #include "core/config.hpp"
 #include "core/types.hpp"
 #include "core/error_handler.hpp"
 #include "core/error_types.hpp"
+#include "core/system_logger.hpp"
+#include <FastLED.h>
+#include <Arduino.h>
 
 namespace pixelino::driver {
 
@@ -22,18 +23,22 @@ void Display::begin() {
     core::config::display::init(m_leds);
 	FastLED.setDither(BINARY_DITHER);
   	FastLED.setBrightness(core::config::display::brightness);
+	core::SystemLogger::getInstance().logSystemEvent(core::SystemEvent::DISPLAY_INIT);
 }
 
 void Display::show() {
+	core::SystemLogger::getInstance().logDriverEvent("DISPLAY", "SHOWED OUT_BUFF");
 	FastLED.show();
 }
 
 // clears the m_leds buffer
 void Display::clear() {
+	core::SystemLogger::getInstance().logDriverEvent("DISPLAY", "CLEARED OUT_BUFF");
 	FastLED.clear();
 }
 
 void Display::fill(Color col) {
+	core::SystemLogger::getInstance().logDriverEvent("DISPLAY", "FILLED <COL> OUT_BUFF");
 	fill_solid(m_leds, core::config::display::num_leds, CRGB(col.r, col.g, col.b));
 }
 
@@ -47,6 +52,7 @@ void Display::setPixel(Position pos, Color col) {
 
 void Display::setPixel(uint8_t x, uint8_t y, Color col) {
 	if (x < core::config::display::width && y < core::config::display::height) {
+		core::SystemLogger::getInstance().logDriverEvent("DISPLAY", "SET_PIXEL <POS><COL> OUT_BUFF");
 		std::uint8_t ledIndex = getIndex(x, y);
 		m_leds[ledIndex] = CRGB(col.r, col.g, col.b);
 	}
