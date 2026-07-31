@@ -107,8 +107,8 @@ const char* ButtonManager::buttonEventToMessage(ButtonId id, ButtonEvent event) 
         /* ONBOARD    */ { "ONBOARD -> PRESS",    "ONBOARD -> CLICK",    "ONBOARD -> LONG_PRESS" }
     };
 
-    auto idIdx = static_cast<size_t>(id);
-    auto evtIdx = static_cast<size_t>(event);
+    std::uint8_t idIdx = static_cast<std::uint8_t>(id);
+    std::uint8_t evtIdx = static_cast<std::uint8_t>(event);
 
     if (idIdx < 9 && evtIdx < 3) {
         return MESSAGES[idIdx][evtIdx];
