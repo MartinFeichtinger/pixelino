@@ -37,7 +37,7 @@ public:
     void operator=(const SystemLogger&) = delete;
 
     // special logger used by the error handler (for error logging use the error handler!)
-	void logError(ErrorCode code, ErrorMode mode);  
+	void logError(ErrorCode code);  
 
     // universal logging function
     void logEvent(LogSource source, const char* message);
@@ -45,24 +45,22 @@ public:
     void printLogHistory() const;
     void clearLog();
 
-    // relevant class states set via the serviceCLI modul for corect formatign
-    void setServiceMode(bool enabled) { m_serviceMode = enabled; }
-    void setParsingMode(bool enabled) { m_parsingMode = enabled; }
+    // public getter functions
+    static constexpr std::uint8_t max_log_entries = 32;
+    std::uint8_t getStoredLogCount() const;
+    std::uint16_t getTotalLogCount() const;
+    const SystemLogEntry& getLogEntry(std::uint8_t index) const; // gets i-th oldest log
+    static const char* logSourceToString(LogSource source);
 
 private:
     SystemLogger() = default;
 
 	void log(SystemLogEntry entry);
-
-    static constexpr std::uint8_t max_log_entries = 32;
     SystemLogEntry m_log[max_log_entries];
     std::uint16_t m_count = 0;		// total counted log entries
-
-    inline void printFormattedTimestamp(uint32_t ms) const;
-    static const char* logSourceToString(LogSource source);
-
-    bool m_serviceMode = false;
-    bool m_parsingMode = false;
 };
 
 } // namespace pixelino::core
+
+
+//inline void printFormattedTimestamp(uint32_t ms) const;

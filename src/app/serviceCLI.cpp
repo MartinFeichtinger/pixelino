@@ -1,20 +1,21 @@
 #include "serviceCLI.hpp"
+
 #include "core/config.hpp"
 #include "core/types.hpp"
 #include "core/error_handler.hpp"
 #include "core/error_types.hpp"
 #include "core/system_logger.hpp"
+
 #include "driver/display.hpp"
 #include "driver/button_manager.hpp"
 
+#include <SimpleCLI.h>
+#include <Arduino.h>
+
 namespace pixelino::app {
 
-ServiceCLI& ServiceCLI::getInstance() {
-	static ServiceCLI instance; // Guaranteed single instance
-	return instance;
-}
-
 void ServiceCLI::begin(driver::ButtonManager& buttonManager) {
+	Serial.begin(115200);
 	pinMode(core::config::gpio::onboard_led, OUTPUT);
 
 	// register onboard button trigger directly with ButtonManager
@@ -57,6 +58,7 @@ void ServiceCLI::begin(driver::ButtonManager& buttonManager) {
 	errorCmd.setDescription("Manage error handling (getMode | setMode <silent, log_only, log_life, brodcast, crash_on_fatal, crash_on_error, crash_on_warning>).");
 
 	m_cli.setOnError(cliErrorCallback);
+
 	core::SystemLogger::getInstance().logEvent(core::LogSource::APP, "CLI", "CLI INITIATED");
 }
 
@@ -70,7 +72,6 @@ void ServiceCLI::activate(void) {
 
 	m_isActive = true;
 	digitalWrite(core::config::gpio::onboard_led, HIGH);
-	core::SystemLogger::getInstance().setServiceMode(true);
 	core::SystemLogger::getInstance().logEvent(core::LogSource::APP, "CLI", "CLI ACTIVATED");
 	Serial.println("\n====================================== serviceCLI activated =======================================");
 	Serial.print("serviceCLI-esp32> ");
@@ -81,7 +82,6 @@ void ServiceCLI::deactivate(void) {
 
 	m_isActive = false;
 	digitalWrite(core::config::gpio::onboard_led, LOW);
-	core::SystemLogger::getInstance().setServiceMode(false);
 	core::SystemLogger::getInstance().logEvent(core::LogSource::APP, "CLI", "CLI DEACTIVATED");
 	Serial.println("===================================== serviceCLI deactivated ======================================");
 	Serial.println();
@@ -106,9 +106,9 @@ void ServiceCLI::tick(void) {
 			Serial.println();
 			
 			if (m_inputBuffer.length() > 0) {
-				core::SystemLogger::getInstance().setParsingMode(true);
+				m_parsingInput = true;
 				m_cli.parse(m_inputBuffer);
-				core::SystemLogger::getInstance().setParsingMode(false);
+				m_parsingInput = false;
 				m_inputBuffer = ""; // Reset buffer
 			}
 			if (m_isActive) Serial.print("serviceCLI-esp32> ");
@@ -130,6 +130,93 @@ void ServiceCLI::tick(void) {
 	}
 }
 
+void ServiceCLI::print(const String& msg) {
+	Serial.print(msg);
+}
+
+void ServiceCLI::printLiveError(core::ErrorCode code, core::ErrorMode mode) {
+    if ((m_isActive && mode == core::ErrorMode::LOG_LIVE) || mode >= core::ErrorMode::BRODCAST) {
+        
+        // ANSI escape sequence magic: 
+        // \r moves cursor to the beginning of the line
+        // \e[K clears everything from the cursor to the end of the line
+        Serial.print("\r\e[K"); 
+
+        Serial.print("[LIVE_");
+        Serial.print(core::levelToString(core::getErrorLevel(code)));
+        Serial.print("]\t");
+        Serial.print(core::getErrorMessage(code)); 
+		Serial.print("\n");
+        
+        if (m_isActive && !m_parsingInput) {
+			// reprint promt
+			Serial.print("serviceCLI-esp32> ");
+			Serial.print(m_inputBuffer);
+		}
+    }
+}
+
+void ServiceCLI::printSystemCrashMsg() {
+	Serial.println("\n*** FATAL ERROR: SYSTEM HALTED ***");
+
+    Serial.println("*** LOG HISTORY ***");
+    printLogHistory();
+
+    Serial.println("\n*** FATAL ERROR: SYSTEM HALTED ***");
+}
+
+// Add the migrated log history printer
+void ServiceCLI::printLogHistory() {
+    auto& logger = core::SystemLogger::getInstance();
+    std::uint8_t logs = logger.getStoredLogCount();
+    std::uint16_t totalCount = logger.getTotalLogCount();
+
+    if (totalCount == 0) {
+        Serial.println("log is empty");
+        return;
+    }
+
+    for (std::uint8_t i = 0; i < logs; i++) {
+        const core::SystemLogEntry& entry = logger.getLogEntry(i);
+
+        if (entry.source == core::LogSource::ERROR_HANDLER) {
+            core::ErrorLevel lvl = core::getErrorLevel(entry.payload.error.code);
+            if (lvl >= core::ErrorLevel::ERROR) Serial.printf("\e[31m");          // red
+            else if (lvl == core::ErrorLevel::WARNING) Serial.printf("\e[33m");   // yellow
+            else if (lvl == core::ErrorLevel::INFO) Serial.printf("\e[1m");       // bold
+
+            printFormattedTimestamp(entry.timestamp);
+            Serial.printf(" [%s] \t %s\n",
+                core::levelToString(lvl),
+                core::getErrorMessage(entry.payload.error.code));
+
+            Serial.printf("\e[0m"); // reset serial output format
+        } else {
+            printFormattedTimestamp(entry.timestamp);
+            Serial.printf(" [%s] \t %s\n",
+                entry.payload.event.tag,
+                entry.payload.event.message);
+        }
+    }
+
+    if (totalCount > 32) { // max_log_entries
+        Serial.print("log overflowed: ");
+        Serial.print(totalCount);
+        Serial.print(" LOGS, ");
+		Serial.print(core::SystemLogger::max_log_entries);
+		Serial.println(" MAX_LOG_ENTRIES");
+    }
+}
+
+void ServiceCLI::printFormattedTimestamp(uint32_t ms) {
+    uint32_t seconds = ms / 1000;
+    uint32_t minutes = seconds / 60;
+    uint32_t rem_seconds = seconds % 60;
+    uint32_t rem_ms = ms % 1000;
+    Serial.printf("[%02lu:%02lu.%03lu]", minutes, rem_seconds, rem_ms);
+}
+
+// CLI callbacks
 void ServiceCLI::exitCallback(cmd* c) {
 	// Calling non-static deactivate via the singleton instance!
 	ServiceCLI::getInstance().deactivate();
@@ -181,10 +268,11 @@ void ServiceCLI::logCallback(cmd* c)
 	String action = cmd.getArgument("action").getValue();
 
 	if (action.equalsIgnoreCase("show")) {
-		core::SystemLogger::getInstance().printLogHistory();
+		ServiceCLI::getInstance().printLogHistory();
 	}
 	else if(action.equalsIgnoreCase("clear")) {
 		core::SystemLogger::getInstance().clearLog();
+		Serial.println("system log cleared");
 	}
 }
 

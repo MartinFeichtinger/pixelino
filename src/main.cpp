@@ -1,28 +1,10 @@
-#include "core/config.hpp"
-#include "core/system_logger.hpp"
-#include "driver/display.hpp"
-#include "driver/button_manager.hpp"
-#include "app/serviceCLI.hpp"
-#include <OneButton.h>
+#include "app/app_manager.hpp"
 #include <Arduino.h>
 
-pixelino::driver::ButtonManager buttonManager;
-
 void setup() {
-    Serial.begin(115200);
-
-	// hardware inits
-	pixelino::driver::Display::getInstance().begin();
-	buttonManager.begin();
-
-	// service inits
-	pixelino::app::ServiceCLI::getInstance().begin(buttonManager);
-
-	// log setup finish
-	pixelino::core::SystemLogger::getInstance().logEvent(pixelino::core::LogSource::SYSTEM, "SETUP FINISHED");
+	pixelino::app::AppManager::getInstance().begin();
 }
 
 void loop() {
-	buttonManager.tick();
-    pixelino::app::ServiceCLI::getInstance().tick(); 
+	pixelino::app::AppManager::getInstance().tick();
 }

@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Arduino.h>
+#include "core/error_types.hpp"
 #include <SimpleCLI.h>
 
 namespace pixelino::driver { class ButtonManager; } // forward declaration
@@ -9,10 +9,8 @@ namespace pixelino::app {
 
 class ServiceCLI {
 public:
-    // Access the single global instance
-    static ServiceCLI& getInstance();
-
-    // Prevent accidental copying
+    // singleton defintion
+    static ServiceCLI& getInstance() { static ServiceCLI instance; return instance; }
     ServiceCLI(const ServiceCLI&) = delete;
     void operator=(const ServiceCLI&) = delete;
 
@@ -21,15 +19,23 @@ public:
     void deactivate();
     void toggle();
     void tick();
+    void print(const String& msg);
 
-    bool isActive() const { return m_isActive; }
+    // public helper functions
+    void printLiveError(core::ErrorCode code, core::ErrorMode mode);
+    void printSystemCrashMsg();
+    void printLogHistory();
 
 private:
-    ServiceCLI() = default; // Private constructor
+    ServiceCLI() = default;
 
     SimpleCLI m_cli;
     bool m_isActive = false;
+    bool m_parsingInput = false;
 	String m_inputBuffer = "";
+
+    // private helpers
+    void printFormattedTimestamp(uint32_t ms);
 
 	// CLI callback funtions
     static void pingCallback(cmd* c);
