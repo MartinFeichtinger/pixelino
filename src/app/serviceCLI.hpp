@@ -19,7 +19,6 @@ public:
     void deactivate();
     void toggle();
     void tick();
-    void print(const String& msg);
 
     // public helper functions
     void printLiveError(core::ErrorCode code, core::ErrorMode mode);

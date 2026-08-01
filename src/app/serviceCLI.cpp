@@ -130,12 +130,6 @@ void ServiceCLI::tick(void) {
 	}
 }
 
-void ServiceCLI::print(const String& msg) {
-	Serial.print("\n[INFO] ");
-	Serial.println(msg);
-	Serial.print("serviceCLI-esp32> ");
-}
-
 void ServiceCLI::printLiveError(core::ErrorCode code, core::ErrorMode mode) {
     if ((m_isActive && mode == core::ErrorMode::LOG_LIVE) || mode >= core::ErrorMode::BRODCAST) {
         
