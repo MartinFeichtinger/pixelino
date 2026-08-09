@@ -10,7 +10,7 @@ namespace pixelino::driver {
 class Display {
 public:
     // single global instance
-    static Display& getInstance();
+    static Display& getInstance() { static Display instance; return instance; }
     Display(const Display&) = delete;
     void operator=(const Display&) = delete;    
 

@@ -40,7 +40,9 @@ using ButtonCallback = std::function<void(ButtonId, ButtonEvent)>;
 
 class ButtonManager {
 public:
-    ButtonManager();
+    static ButtonManager& getInstance() { static ButtonManager instance; return instance; }
+    ButtonManager(const ButtonManager&) = delete;
+    void operator=(const ButtonManager&) = delete;
 
     void begin();
     void tick();
@@ -55,7 +57,12 @@ public:
     void setActiveCallback(ButtonCallback callback) { m_activeCallback = callback; }
     void clearActiveCallback() { m_activeCallback = nullptr; }
 
+    // returns button event string for the log output
+    static const char* buttonEventToMessage(ButtonId id, ButtonEvent event);
+
 private:
+    ButtonManager();
+
     struct ButtonBinding {
         ButtonId id;
         OneButton button;
@@ -73,8 +80,6 @@ private:
     ButtonCallback m_activeCallback = nullptr;
 
     void dispatchEvent(ButtonId id, ButtonEvent event);
-
-    static const char* buttonEventToMessage(ButtonId id, ButtonEvent event);
 };
 
 } // namespace pixelino::driver

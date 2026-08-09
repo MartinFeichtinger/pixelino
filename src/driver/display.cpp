@@ -13,12 +13,6 @@ using core::Color;
 using core::Position;
 using core::Pixel;
 
-
-Display& Display::getInstance() {
-    static Display instance;
-    return instance;
-}
-
 void Display::begin() {
     core::config::display::init(m_leds);
 	FastLED.setDither(BINARY_DITHER);

@@ -3,8 +3,6 @@
 #include "core/error_types.hpp"
 #include <SimpleCLI.h>
 
-namespace pixelino::driver { class ButtonManager; } // forward declaration
-
 namespace pixelino::app {
 
 class ServiceCLI {
@@ -14,7 +12,7 @@ public:
     ServiceCLI(const ServiceCLI&) = delete;
     void operator=(const ServiceCLI&) = delete;
 
-	void begin(driver::ButtonManager& buttonManager);
+	void begin();
     void activate();
     void deactivate();
     void toggle();

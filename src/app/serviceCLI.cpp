@@ -14,21 +14,9 @@
 
 namespace pixelino::app {
 
-void ServiceCLI::begin(driver::ButtonManager& buttonManager) {
+void ServiceCLI::begin() {
 	Serial.begin(115200);
 	pinMode(core::config::gpio::onboard_led, OUTPUT);
-
-	// register onboard button trigger directly with ButtonManager
-	buttonManager.addSystemHandler(
-		[this](driver::ButtonId btn, driver::ButtonEvent evt) {
-			if (btn == driver::ButtonId::ONBOARD && evt == driver::ButtonEvent::CLICK) {
-				this->toggle();
-			}
-			if (btn == driver::ButtonId::ONBOARD) return true;	// we consum all events for this button
-			else return false; 									// not our button, let it pass through
-		},
-		pixelino::driver::HandlerPriority::HIGH_PRIORITY
-	);
 
 	Command pingCmd = m_cli.addCommand("ping", pingCallback);
 	pingCmd.setDescription(" Response with pong to test CLI connection.");

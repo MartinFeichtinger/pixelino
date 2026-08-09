@@ -47,14 +47,6 @@ void ButtonManager::begin() {
 			}
 		}, &binding);
 	}
-	// add button observer for logging
-	addSystemObserver([](driver::ButtonId id, driver::ButtonEvent event) {
-        core::SystemLogger::getInstance().logEvent(
-            core::LogSource::DRIVER,        // log source
-            "BUTTON",						// tag pointer
-            buttonEventToMessage(id, event)	// message pointer
-        );
-    });
 
     core::SystemLogger::getInstance().logEvent(core::LogSource::DRIVER, "BUTTON", "BUTTON INITIATED");
 }
