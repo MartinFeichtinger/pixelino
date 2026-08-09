@@ -9,7 +9,7 @@
 #include "driver/display.hpp"
 #include "driver/button_manager.hpp"
 
-#include "app/serviceCLI.hpp"
+#include "app/service_cli.hpp"
 
 namespace pixelino::app {
 
