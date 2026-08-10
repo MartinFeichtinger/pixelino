@@ -1,4 +1,5 @@
 #include "core/error_observer.hpp"
+#include "app/app_interface.hpp"
 
 namespace pixelino::app {
 
@@ -10,6 +11,7 @@ public:
 
     void begin();
     void tick();
+    void switchApp(IApplication* newApp);
 
     // error observer functions
     void onError(core::ErrorCode code, core::ErrorMode mode) override;
@@ -17,7 +19,7 @@ public:
 
 private:
     AppManager() = default;
-
+    IApplication* m_activeApp = nullptr;
 };
 
 } // namespace pixelino::app

@@ -10,6 +10,8 @@
 #include "driver/button_manager.hpp"
 
 #include "app/service_cli.hpp"
+#include "app/app_interface.hpp"
+#include "app/main_menu.hpp"
 
 namespace pixelino::app {
 
@@ -36,6 +38,20 @@ void AppManager::begin() {
         driver::HandlerPriority::HIGH_PRIORITY
     );
 
+    // wire: start key long press -> hard game exit
+    driver::ButtonManager::getInstance().addSystemHandler(
+        [this](driver::ButtonId btn, driver::ButtonEvent evt) {
+            if (btn == driver::ButtonId::KEY_START && evt == driver::ButtonEvent::LONG_PRESS) {
+                // force load a fresh main menu
+                // switchApp will automatically delete the currently running game
+                this->switchApp(new apps::menu::MainMenu());
+                return true;    // consume event
+            }
+            return false;
+        },
+        driver::HandlerPriority::HIGH_PRIORITY
+    );
+
     // wire: button events observer -> SystemLogger
     driver::ButtonManager::getInstance().addSystemObserver(
         [](driver::ButtonId id, driver::ButtonEvent event) {
@@ -48,12 +64,55 @@ void AppManager::begin() {
     );
     
     // log setup finish
-	pixelino::core::SystemLogger::getInstance().logEvent(pixelino::core::LogSource::SYSTEM, "SETUP FINISHED");
+	core::SystemLogger::getInstance().logEvent(core::LogSource::SYSTEM, "SETUP FINISHED");
+
+    // boot directly in the main menu
+    switchApp(new apps::menu::MainMenu());
 }
 
 void AppManager::tick() {
     driver::ButtonManager::getInstance().tick();
-    app::ServiceCLI::getInstance().tick(); 
+    app::ServiceCLI::getInstance().tick();
+
+    static uint32_t lastFrameTimeMs = 0;
+    const uint32_t currentMs = millis();
+    const uint32_t frameIntervalMs = 33; // 1000ms / 30fps = 33.3ms
+
+    if (currentMs - lastFrameTimeMs >= frameIntervalMs) {
+        // Calculate exact delta time in seconds
+        float deltaTime = static_cast<float>(currentMs - lastFrameTimeMs) / 1000.0f;
+        lastFrameTimeMs = currentMs;
+
+        if (m_activeApp) {
+            m_activeApp->tick(deltaTime);
+            m_activeApp->draw();
+        }
+    }
+}
+
+void AppManager::switchApp(IApplication* newApp) {
+    // shut down and delete the OLD app to free memory!
+    if (m_activeApp) {
+        m_activeApp->onStop();  // give it a chance to save dater EEPROM (not implemented yet)
+        delete m_activeApp;     // destroy it and free RAM
+    }
+
+    // point to the NEW app
+    m_activeApp = newApp;
+
+    // start the NEW app
+    if (m_activeApp) {
+        m_activeApp->onStart();
+
+        // route buttons to the new app
+        driver::ButtonManager::getInstance().setActiveCallback(
+            [this](driver::ButtonId id, driver::ButtonEvent event) {
+                if (m_activeApp) m_activeApp->onButtonEvent(id, event);
+            }
+        );
+    } else {
+        driver::ButtonManager::getInstance().clearActiveCallback();
+    }
 }
 
 void AppManager::onError(core::ErrorCode code, core::ErrorMode mode) {
