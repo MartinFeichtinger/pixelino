@@ -19,8 +19,13 @@ public:
 	void show();
     void clear();
 
-    // drawing funcitons
+    // bulk copy an array of core::Color into the display buffer
+    void loadBuffer(const core::Color* buffer, std::size_t count);
+
+    // fill entiere display with one color
 	void fill(core::Color col);
+
+    // alows to manipulate single pixels (not recommented for many pixels!)
     void setPixel(const core::Pixel& pix);
     void setPixel(core::Position pos, core::Color col);
     void setPixel(uint8_t x, uint8_t y, core::Color col);

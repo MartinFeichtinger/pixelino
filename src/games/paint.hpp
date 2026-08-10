@@ -35,7 +35,7 @@ public:
 
 private:
     // display size matrix storing the painted canvas colors
-    core::Color m_canvas[core::config::display::width][core::config::display::height];
+    core::Color m_canvas[core::config::display::height][core::config::display::width];
 
     // current cursor coordinates on the grid
     core::Position m_cursor{};

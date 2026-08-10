@@ -38,7 +38,7 @@ void PaintGame::onStart() {
     // clear all canvas pixels to black
     for (int y = 0; y < core::config::display::height; ++y) {
         for (int x = 0; x < core::config::display::width; ++x) {
-            m_canvas[x][y] = core::Color{0, 0, 0};
+            m_canvas[y][x] = core::Color{0, 0, 0};
         }
     }
 }
@@ -60,14 +60,10 @@ void PaintGame::draw() {
     driver::Display& display = driver::Display::getInstance();
     display.clear();
 
-    // 1. render painted canvas pixels
-    for (int y = 0; y < core::config::display::height; ++y) {
-        for (int x = 0; x < core::config::display::width; ++x) {
-            display.setPixel(x, y, m_canvas[x][y]);
-        }
-    }
+    // bulk copy canvas into display buffer (O(1) call instead of 64 setPixel calls)
+    display.loadBuffer(&m_canvas[0][0], core::config::display::num_leds);
 
-    // 2. overlay cursor (either current hue or white flash)
+    // overlay cursor (either current hue or white flash)
     if (m_cursorVisible) {
         core::Color cursorColor = core::Color::fromHSV(m_currentHue, 255, 255);
         display.setPixel(m_cursor.x, m_cursor.y, cursorColor);
@@ -103,7 +99,7 @@ void PaintGame::onButtonEvent(driver::ButtonId id, driver::ButtonEvent event) {
     
     // Key A: set canvas pixel at cursor to current active color
     else if (id == driver::ButtonId::KEY_A) {
-        m_canvas[m_cursor.x][m_cursor.y] = core::Color::fromHSV(m_currentHue, 255, 255);
+        m_canvas[m_cursor.y][m_cursor.x] = core::Color::fromHSV(m_currentHue, 255, 255);
     }
     
     // Key B: cycle color hue by 32 units (8 distinct primary steps per 255 wheel)
@@ -130,7 +126,7 @@ void PaintGame::drawIcon() {
     const core::Color BRS = core::Color(210, 180, 140);    // Brush Bristles
 
     // 64-pixel array (8x8) representing a painting pallet
-    static const core::Color iconPixels[64] = {
+    static const core::Color iconPixels[core::config::display::num_leds] = {
         _O_, _O_, _O_, _O_, _O_, _O_, BRS, BRS,
         _O_, _O_, BLU, BLU, BLU, BRS, FER, _O_,
         _O_, GRN, YLW, BLU, BLU, HND, _O_, _O_,
@@ -141,20 +137,7 @@ void PaintGame::drawIcon() {
         _O_, _O_, _O_, _O_, _O_, _O_, _O_, _O_
     };
 
-    // draw the icon onto the display
-    for (int y = 0; y < 8; ++y) {
-        for (int x = 0; x < 8; ++x) {
-            
-            // Calculate 1D index from 2D coordinates
-            int index = (y * 8) + x;
-            core::Color pixelColor = iconPixels[index];
-
-            // Only draw if it is NOT the transparent background
-            if (pixelColor.r != 0 || pixelColor.g != 0 || pixelColor.b != 0) {
-                display.setPixel(x, y, pixelColor);
-            }
-        }
-    }
+    driver::Display::getInstance().loadBuffer(iconPixels, core::config::display::num_leds);
 }
 
 } // namespace pixelino::apps::paint
