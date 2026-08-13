@@ -1,4 +1,4 @@
-#include "app/main_menu.hpp"
+#include "apps/main_menu.hpp"
 #include "app/app_manager.hpp"
 #include "driver/display.hpp"
 #include "core/system_logger.hpp"

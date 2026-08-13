@@ -1,4 +1,4 @@
-#include "app/settings_menu.hpp"
+#include "apps/settings/settings.hpp"
 #include "core/system_logger.hpp"
 #include "driver/display.hpp"
 #include "app/app_registry.hpp"

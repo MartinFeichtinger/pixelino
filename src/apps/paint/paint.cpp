@@ -1,4 +1,4 @@
-#include "games/paint.hpp"
+#include "apps/paint/paint.hpp"
 #include "core/system_logger.hpp"
 #include "driver/display.hpp"
 #include "app/app_registry.hpp"

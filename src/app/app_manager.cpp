@@ -11,7 +11,7 @@
 
 #include "app/service_cli.hpp"
 #include "app/app_interface.hpp"
-#include "app/main_menu.hpp"
+#include "apps/main_menu.hpp"
 
 namespace pixelino::app {
 
