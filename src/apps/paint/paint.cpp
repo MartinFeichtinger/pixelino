@@ -60,7 +60,7 @@ void PaintGame::draw() {
     driver::Display& display = driver::Display::getInstance();
     display.clear();
 
-    // bulk copy canvas into display buffer (O(1) call instead of 64 setPixel calls)
+    // bulk copy canvas into display buffer (one call instead of 64 setPixel calls)
     display.loadBuffer(&m_canvas[0][0], core::config::display::num_leds);
 
     // overlay cursor (either current hue or white flash)
@@ -77,34 +77,40 @@ void PaintGame::draw() {
 // ===========================================================================================
 
 void PaintGame::onButtonEvent(driver::ButtonId id, driver::ButtonEvent event) {
-    if (event != driver::ButtonEvent::CLICK) return;
+    if (event == driver::ButtonEvent::CLICK) {
+        // cache limits to avoid typing them repeatedly
+        std::uint8_t maxX = core::config::display::width - 1;
+        std::uint8_t maxY = core::config::display::height - 1;
 
-    // cache limits to avoid typing them repeatedly
-    std::uint8_t maxX = core::config::display::width - 1;
-    std::uint8_t maxY = core::config::display::height - 1;
-
-    // D-Pad navigation with dynamic wrap-around boundaries
-    if (id == driver::ButtonId::KEY_UP) {
-        m_cursor.y = (m_cursor.y > 0) ? (m_cursor.y - 1) : maxY;
-    } 
-    else if (id == driver::ButtonId::KEY_DOWN) {
-        m_cursor.y = (m_cursor.y < maxY) ? (m_cursor.y + 1) : 0;
-    } 
-    else if (id == driver::ButtonId::KEY_LEFT) {
-        m_cursor.x = (m_cursor.x > 0) ? (m_cursor.x - 1) : maxX;
-    } 
-    else if (id == driver::ButtonId::KEY_RIGHT) {
-        m_cursor.x = (m_cursor.x < maxX) ? (m_cursor.x + 1) : 0;
+        // D-Pad navigation with dynamic wrap-around boundaries
+        if (id == driver::ButtonId::KEY_UP) {
+            m_cursor.y = (m_cursor.y > 0) ? (m_cursor.y - 1) : maxY;
+        } 
+        else if (id == driver::ButtonId::KEY_DOWN) {
+            m_cursor.y = (m_cursor.y < maxY) ? (m_cursor.y + 1) : 0;
+        } 
+        else if (id == driver::ButtonId::KEY_LEFT) {
+            m_cursor.x = (m_cursor.x > 0) ? (m_cursor.x - 1) : maxX;
+        } 
+        else if (id == driver::ButtonId::KEY_RIGHT) {
+            m_cursor.x = (m_cursor.x < maxX) ? (m_cursor.x + 1) : 0;
+        }
+        
+        // Key A: set canvas pixel at cursor to current active color
+        else if (id == driver::ButtonId::KEY_A) {
+            m_canvas[m_cursor.y][m_cursor.x] = core::Color::fromHSV(m_currentHue, 255, 255);
+        }
+        
+        // Key B: cycle color hue by 32 units (8 distinct primary steps per 255 wheel)
+        else if (id == driver::ButtonId::KEY_B) {
+            m_currentHue += 32;
+        }
     }
-    
-    // Key A: set canvas pixel at cursor to current active color
-    else if (id == driver::ButtonId::KEY_A) {
-        m_canvas[m_cursor.y][m_cursor.x] = core::Color::fromHSV(m_currentHue, 255, 255);
-    }
-    
-    // Key B: cycle color hue by 32 units (8 distinct primary steps per 255 wheel)
-    else if (id == driver::ButtonId::KEY_B) {
-        m_currentHue += 32;
+    else if (event == driver::ButtonEvent::LONG_PRESS) {
+        // set pixel back to black
+        if (id == driver::ButtonId::KEY_A) {
+            m_canvas[m_cursor.y][m_cursor.x] = core::Color (0,0,0);
+        }
     }
 }
 
