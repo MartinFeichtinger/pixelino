@@ -55,10 +55,25 @@ void Display::setPixel(Position pos, Color col) {
 }
 
 void Display::setPixel(uint8_t x, uint8_t y, Color col) {
-	if (x < core::config::display::width && y < core::config::display::height) {
+	if (checkBounds(x, y)) {
 		//core::SystemLogger::getInstance().logEvent(core::LogSource::DRIVER, "DISPLAY", "SET_PIXEL <POS><COL> OUT_BUFF");
 		std::uint8_t ledIndex = getIndex(x, y);
 		m_leds[ledIndex] = CRGB(col.r, col.g, col.b);
+	}
+}
+
+core::Color Display::getPixel(uint8_t x, uint8_t y) const{
+	if (checkBounds(x, y)) {
+		std::uint8_t index = getIndex(x, y);
+		CRGB col = m_leds[getIndex(x, y)];
+		return core::Color(col.r, col.g, col.b);
+	}
+}
+
+bool Display::checkBounds(std::uint8_t x, std::uint8_t y) const {
+	if (x < core::config::display::width && y < core::config::display::height)
+	{
+		return true;
 	}
 	else {
 		if (x >= core::config::display::width) {
@@ -67,6 +82,7 @@ void Display::setPixel(uint8_t x, uint8_t y, Color col) {
 		if (y >= core::config::display::height) {
 			core::ErrorHandler::getInstance().handle(core::ErrorCode::PIXEL_OUT_OF_BOUND_Y);
 		}
+		return false;
 	}
 }
 

@@ -30,6 +30,10 @@ public:
     void setPixel(core::Position pos, core::Color col);
     void setPixel(uint8_t x, uint8_t y, core::Color col);
 
+    // alows to get the color of an pixel (only for storing and serial output)
+    // do not use for game purposes
+    core::Color getPixel(uint8_t x, uint8_t y) const;
+
 	// calibrate functions (not implemented yet)
 	// hueSweep (rainbow)
 	// ...
@@ -42,6 +46,9 @@ private:
     CRGB m_leds[core::config::display::num_leds];
 
 	// carbrate coretion data (not implemented yet)
+    
+    // helper returns true if pixel is in display boundaries else throw error and return false
+    bool checkBounds(std::uint8_t x, std::uint8_t y) const;
     
     // helper to map 2D coordinates to the 1D FastLED array, with return value (0 - num_leds-1)
     std::uint8_t getIndex(std::uint8_t x, std::uint8_t y) const; 

@@ -28,13 +28,13 @@ void ServiceCLI::begin() {
 	helpCmd.setDescription(" Display all available commands and there usage.");
 
 	Command displayCmd = m_cli.addCommand("display", displayCallback);
-	displayCmd.addPositionalArgument("action"); // "fill", "setPixel", "clear"
+	displayCmd.addPositionalArgument("action"); // "fill", "setPixel", "clear", "printBuffer"
 	displayCmd.addArgument("x", "0");
 	displayCmd.addArgument("y", "0");
 	displayCmd.addArgument("r", "0");
 	displayCmd.addArgument("g", "0");
 	displayCmd.addArgument("b", "0");
-	displayCmd.setDescription(" Allows to manipulate the display via the serviceCLI (fill, setPixel, clear).");
+	displayCmd.setDescription(" Allows to manipulate the display via the serviceCLI (fill, setPixel, clear, printBuffer).");
 
 	Command logCmd = m_cli.addCommand("log", logCallback);
 	logCmd.addPositionalArgument("action", "show"); // "show", "clear"
@@ -239,6 +239,33 @@ void ServiceCLI::displayCallback(cmd* c) {
 	else if (action.equalsIgnoreCase("clear")) {
 		display.clear();
 		display.show();
+	}
+	else if (action.equalsIgnoreCase("printBuffer")) {
+		uint8_t width = core::config::display::width;
+    	uint8_t height = core::config::display::height;
+
+		Serial.println("static const core::Color iconPixels[core::config::display::num_leds] = {");
+
+		for (std::uint8_t y = 0; y < height; y++) {
+			Serial.print("   ");
+			for (std::uint8_t x = 0; x < width; x++) {
+				core::Color col = driver::Display::getInstance().getPixel(x, y);
+
+				// pack RGB into a 24-bit integer
+				uint32_t hexColor =	(static_cast<uint32_t>(col.r) << 16) | 
+									(static_cast<uint32_t>(col.g) << 8)  | 
+									(static_cast<uint32_t>(col.b));
+
+				Serial.printf("0x%06X", hexColor);
+
+				// add tailing comma and space (exept for the last item)
+				if (y != height - 1 || x != width - 1) {
+					Serial.print(", ");
+				}			
+			}
+			Serial.println();
+		}
+		Serial.println("};");
 	}
 	else {
 		Serial.println("ERROR: Missing argument <fill, setPixel, clear>");

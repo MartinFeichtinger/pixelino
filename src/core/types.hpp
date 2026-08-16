@@ -17,6 +17,8 @@ namespace pixelino::core {
         constexpr Color() = default;
         constexpr Color(std::uint8_t red, std::uint8_t green, std::uint8_t blue)
             : r(red), g(green), b(blue) {}
+        constexpr Color(std::uint32_t hex)
+            : r((hex >> 16) & 0xFF), g((hex >> 8) & 0xFF), b(hex & 0xFF) {}
 
         // --- FastLED Color Utilities (Wrapped) ---
         
