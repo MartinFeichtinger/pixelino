@@ -50,10 +50,16 @@ void PaintGame::onStop() {
 void PaintGame::tick(float deltaTime) {
     // blink cursor every 0.25 seconds for visual identification
     m_blinkTimer += deltaTime;
-    if (m_blinkTimer >= 0.5f) {
-        m_blinkTimer = 0.0f;
-        m_cursorVisible = !m_cursorVisible;
-    }
+
+	if (m_blinkTimer <= 0.5f) {
+		m_cursorVisible = true;
+	}
+	else if (m_blinkTimer <= 1.0f) {
+		m_cursorVisible = false;
+	}
+	else if (m_blinkTimer > 1.0f) {
+		m_blinkTimer=0;
+	}
 }
 
 void PaintGame::draw() {
@@ -109,9 +115,11 @@ void PaintGame::onButtonEvent(driver::ButtonId id, driver::ButtonEvent event) {
     else if (event == driver::ButtonEvent::LONG_PRESS) {
         // set pixel back to black
         if (id == driver::ButtonId::KEY_A) {
-            m_canvas[m_cursor.y][m_cursor.x] = core::Color (0,0,0);
+            m_canvas[m_cursor.y][m_cursor.x] = core::Color::Black();
         }
     }
+
+	m_blinkTimer=0;
 }
 
 // ===========================================================================================
@@ -121,27 +129,16 @@ void PaintGame::onButtonEvent(driver::ButtonId id, driver::ButtonEvent event) {
 void PaintGame::drawIcon() {
     driver::Display& display = driver::Display::getInstance();
 
-    // color aliases to make the 8x8 grid readable in code
-    const core::Color _O_ = core::Color(0, 0, 0);          // Transparent / Black
-    const core::Color BLU = core::Color(100, 150, 255);    // Palette Light Blue
-    const core::Color RED = core::Color(255, 0, 0);        // Red Paint
-    const core::Color GRN = core::Color(0, 255, 0);        // Green Paint
-    const core::Color YLW = core::Color(255, 165, 0);      // Yellow/Orange Paint
-    const core::Color HND = core::Color(200, 100, 0);      // Brush Handle
-    const core::Color FER = core::Color(150, 150, 150);    // Brush Metal Ferrule
-    const core::Color BRS = core::Color(210, 180, 140);    // Brush Bristles
-
-    // 64-pixel array (8x8) representing a painting pallet
-    static const core::Color iconPixels[core::config::display::num_leds] = {
-        _O_, _O_, _O_, _O_, _O_, _O_, BRS, BRS,
-        _O_, _O_, BLU, BLU, BLU, BRS, FER, _O_,
-        _O_, GRN, YLW, BLU, BLU, HND, _O_, _O_,
-        RED, BLU, BLU, BLU, HND, BLU, _O_, _O_,
-        BLU, BLU, _O_, BLU, HND, _O_, _O_, _O_,
-        BLU, BLU, BLU, HND, BLU, _O_, _O_, _O_,
-        _O_, BLU, BLU, HND, _O_, _O_, _O_, _O_,
-        _O_, _O_, _O_, _O_, _O_, _O_, _O_, _O_
-    };
+	static const core::Color iconPixels[core::config::display::num_leds] = {
+		0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 
+		0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 
+		0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 
+		0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 
+		0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 
+		0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 
+		0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 
+		0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000
+	};
 
     driver::Display::getInstance().loadBuffer(iconPixels, core::config::display::num_leds);
 }
