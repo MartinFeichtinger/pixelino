@@ -13,4 +13,4 @@ Pixelino is a project for a soldering workshop for children. The core idea is to
 5. Connect the ESP and upload the firmware
 6. *Now everything should work...*
 7. For serial communication and debugging open the serial monitor and click on the onboard button to activate ther service CLI.
-8. Look into src/apps/paint to see how to programm an appication for the pixelino
+8. Look into src/apps/paint to see how to programm an application for the pixelino
