@@ -1,5 +1,5 @@
 # Pixelino
-Pixelino is a project for a soldering workshop for children. The core idea is to build a small games console based on an ESP32, featuring an 8×8 RGB LED display, basic input buttons and an audio modul. The software aritectur is base on the Arduino framework and further open source Arduino librarys listed below.
+Pixelino is a project for a soldering workshop for children. The core idea is to build a small games console based on an ESP32, featuring an 8×8 RGB LED display, basic input buttons and an audio modul. The software aritectur is based on the Arduino framework and further open source Arduino librarys listed below.
 
 * **FastLED** - display and colors
 * **OneButton** - button event generation
