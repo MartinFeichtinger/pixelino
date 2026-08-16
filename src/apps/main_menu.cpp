@@ -53,7 +53,7 @@ void MainMenu::onButtonEvent(driver::ButtonId id, driver::ButtonEvent event) {
         } 
         
         // KEY_START or KEY_A -> Launch selected game/app
-        else if (id == driver::ButtonId::KEY_START || id == driver::ButtonId::KEY_A) {
+        else if (id == driver::ButtonId::KEY_START) {
             if (apps[s_selectedIndex].create) {
                 app::IApplication* newApp = apps[s_selectedIndex].create();
                 app::AppManager::getInstance().switchApp(newApp);
