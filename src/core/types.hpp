@@ -32,9 +32,16 @@ namespace pixelino::core {
         static Color blend(const Color& a, const Color& b, std::uint8_t amount);
 
         // --- Common Color Shortcuts ---
-        static constexpr Color Red()   { return Color{255, 0, 0}; }
-        static constexpr Color Green() { return Color{0, 255, 0}; }
-        static constexpr Color Blue()  { return Color{0, 0, 255}; }
+        static constexpr Color Black()  { return Color{0x000000}; }
+		static constexpr Color White()	{ return Color{0xFFFFFF}; }
+        static constexpr Color Red()	{ return Color{0xFF0000}; }
+        static constexpr Color Green()	{ return Color{0x00FF00}; }
+        static constexpr Color Blue()	{ return Color{0x0000FF}; }
+		static constexpr Color Yellow()	{ return Color{0xFFFF00}; }
+		static constexpr Color Orange()	{ return Color{0xFF8800}; }
+		static constexpr Color Purple()	{ return Color{0xFF00FF}; }
+		static constexpr Color Cyan()	{ return Color{0x00FFFF}; }
+
     };
 
     struct Pixel {
