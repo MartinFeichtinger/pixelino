@@ -34,11 +34,16 @@ void Display::clear() {
 
 void Display::loadBuffer(const core::Color* buffer, std::size_t count) {
     static_assert(sizeof(core::Color) == sizeof(CRGB), "Color memory layout mismatch");
-    std::size_t copyBytes = std::min(count, static_cast<std::size_t>(core::config::display::num_leds)) * sizeof(CRGB);
     
-    std::memcpy(m_leds, buffer, copyBytes);
+    std::size_t numLeds = core::config::display::num_leds;
+    std::size_t copyCount = std::min(count, static_cast<std::size_t>(numLeds));
 
-	//core::SystemLogger::getInstance().logEvent(core::LogSource::DRIVER, "DISPLAY", "EXTERNAL BUFFER LOADED");
+	// the display got rotated 180 degree therfore the buffer needs to be invertet to
+    for (std::size_t i = 0; i < copyCount; ++i) {
+        // source index i maps to target index (numLeds - 1 - i)
+        const auto& col = buffer[i];
+        m_leds[numLeds - 1 - i] = CRGB(col.r, col.g, col.b);
+    }
 }
 
 void Display::fill(Color col) {
@@ -87,7 +92,10 @@ bool Display::checkBounds(std::uint8_t x, std::uint8_t y) const {
 }
 
 std::uint8_t Display::getIndex(std::uint8_t x, std::uint8_t y) const {
-	return (x + y*core::config::display::width);
+    // replaced original (x + y * width) with rotated coordinates:
+    uint8_t rotX = (core::config::display::width - 1) - x;
+    uint8_t rotY = (core::config::display::height - 1) - y;
+    return (rotX + rotY * core::config::display::width);
 }
 
 } // namespace pixelino::driver
