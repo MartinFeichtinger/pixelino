@@ -8,6 +8,7 @@
 
 #include "driver/display.hpp"
 #include "driver/button_manager.hpp"
+#include "driver/audio.hpp"
 
 #include "app/service_cli.hpp"
 #include "app/app_interface.hpp"
@@ -22,6 +23,7 @@ void AppManager::begin() {
 	// hardware inits
 	driver::Display::getInstance().begin();
 	driver::ButtonManager::getInstance().begin();
+    driver::Audio::getInstance().begin();
 
 	// service inits
 	app::ServiceCLI::getInstance().begin();
@@ -71,6 +73,7 @@ void AppManager::begin() {
 }
 
 void AppManager::tick() {
+    driver::ButtonManager::getInstance().tick();
     driver::ButtonManager::getInstance().tick();
     app::ServiceCLI::getInstance().tick();
 
