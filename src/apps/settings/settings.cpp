@@ -4,7 +4,7 @@
 #include "app/app_registry.hpp"
 
 namespace pixelino::app {
-
+/* removed self registry to disable/remove the the settings menu from the main window
 static bool isSettingsMenuRegistered = []() {
     app::AppRegistry::getInstance().registerApp(
         "SettingsMenu",
@@ -15,7 +15,7 @@ static bool isSettingsMenuRegistered = []() {
     );
     return true;
 }();
-
+*/
 void SettingsMenu::onStart() {
     core::SystemLogger::getInstance().logEvent(core::LogSource::SYSTEM, "SETTINGS MENU STARTED");
 }
