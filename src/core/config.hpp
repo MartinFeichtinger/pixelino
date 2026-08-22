@@ -8,15 +8,15 @@ namespace pixelino::core::config {
 	namespace gpio {
 		constexpr std::uint8_t onboard_button	= 0;
 		constexpr std::uint8_t onboard_led		= 2;
-		constexpr std::uint8_t display_data		= 21;
-		constexpr std::uint8_t key_up			= 15;
-		constexpr std::uint8_t key_down			= 4;
-		constexpr std::uint8_t key_left			= 18;
-		constexpr std::uint8_t key_right		= 17;
-		constexpr std::uint8_t key_a			= 1;
-		constexpr std::uint8_t key_b			= 16;
+		constexpr std::uint8_t display_data		= 4;
+		constexpr std::uint8_t key_up			= 22;
+		constexpr std::uint8_t key_down			= 21;
+		constexpr std::uint8_t key_left			= 23;
+		constexpr std::uint8_t key_right		= 18;
+		constexpr std::uint8_t key_a			= 15;
+		constexpr std::uint8_t key_b			= 19;
 		constexpr std::uint8_t key_select		= 5;
-		constexpr std::uint8_t key_start		= 19;
+		constexpr std::uint8_t key_start		= 16;
 	}
 
 	namespace display {
