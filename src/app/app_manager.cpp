@@ -95,6 +95,7 @@ void AppManager::switchApp(IApplication* newApp) {
     if (m_activeApp) {
         m_activeApp->onStop();  // give it a chance to save dater EEPROM (not implemented yet)
         delete m_activeApp;     // destroy it and free RAM
+        core::SystemLogger::getInstance().logEvent(core::LogSource::APP, "STOPPED");
     }
 
     // point to the NEW app
@@ -103,6 +104,7 @@ void AppManager::switchApp(IApplication* newApp) {
     // start the NEW app
     if (m_activeApp) {
         m_activeApp->onStart();
+        core::SystemLogger::getInstance().logEvent(core::LogSource::APP, "STARTED");
 
         // route buttons to the new app
         driver::ButtonManager::getInstance().setActiveCallback(
