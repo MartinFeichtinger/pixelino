@@ -13,8 +13,8 @@ namespace pixelino::core::config {
 		constexpr std::uint8_t key_down			= 4;
 		constexpr std::uint8_t key_left			= 18;
 		constexpr std::uint8_t key_right		= 17;
-		constexpr std::uint8_t key_a			= 1;
-		constexpr std::uint8_t key_b			= 16;
+		constexpr std::uint8_t key_a			= 16;
+		constexpr std::uint8_t key_b			= 13;
 		constexpr std::uint8_t key_select		= 5;
 		constexpr std::uint8_t key_start		= 19;
 	}
