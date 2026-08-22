@@ -25,16 +25,17 @@ static bool isPaintRegistered = []() {
 
 void PaintGame::onStart() {
     // initialize cursor position
-    m_cursor.x = 0;
-    m_cursor.y = 0;
+    m_cursor.pos.x = 0;
+    m_cursor.pos.y = 0;
     
     // start with red hue
     m_currentHue = 0; 
+    m_cursor.col = Color::fromHSV(m_currentHue, 255, 255);
 
     // clear all canvas pixels to black
-    for (int y = 0; y < DisplayHeight; ++y) {
-        for (int x = 0; x < DisplayWidth; ++x) {
-            m_canvas[y][x] = Color{0, 0, 0};
+    for (int y = 0; y < DisplayHeight; y++) {
+        for (int x = 0; x < DisplayWidth; x++) {
+            m_canvas[y][x] = Color::Black();
         }
     }
 }
@@ -67,8 +68,8 @@ void PaintGame::draw() {
 
     // overlay cursor (either current hue or white flash)
     if (m_cursorVisible) {
-        Color cursorColor = Color::fromHSV(m_currentHue, 255, 255);
-        display.setPixel(m_cursor.x, m_cursor.y, cursorColor);
+        m_cursor.col = Color::fromHSV(m_currentHue, 255, 255);
+        display.setPixel(m_cursor);
     }
 
     display.show();
@@ -86,21 +87,21 @@ void PaintGame::onButtonEvent(ButtonId id, ButtonEvent event) {
 
         // D-Pad navigation with dynamic wrap-around boundaries
         if (id == KEY_UP) {
-            m_cursor.y = (m_cursor.y > 0) ? (m_cursor.y - 1) : maxY;
+            m_cursor.pos.y = (m_cursor.pos.y > 0) ? (m_cursor.pos.y - 1) : maxY;
         } 
         else if (id == KEY_DOWN) {
-            m_cursor.y = (m_cursor.y < maxY) ? (m_cursor.y + 1) : 0;
+            m_cursor.pos.y = (m_cursor.pos.y < maxY) ? (m_cursor.pos.y + 1) : 0;
         } 
         else if (id == KEY_LEFT) {
-            m_cursor.x = (m_cursor.x > 0) ? (m_cursor.x - 1) : maxX;
+            m_cursor.pos.x = (m_cursor.pos.x > 0) ? (m_cursor.pos.x - 1) : maxX;
         } 
         else if (id == KEY_RIGHT) {
-            m_cursor.x = (m_cursor.x < maxX) ? (m_cursor.x + 1) : 0;
+            m_cursor.pos.x = (m_cursor.pos.x < maxX) ? (m_cursor.pos.x + 1) : 0;
         }
         
         // Key A: set canvas pixel at cursor to current active color
         else if (id == KEY_A) {
-            m_canvas[m_cursor.y][m_cursor.x] = Color::fromHSV(m_currentHue, 255, 255);
+            m_canvas[m_cursor.pos.y][m_cursor.pos.x] = Color::fromHSV(m_currentHue, 255, 255);
         }
         
         // Key B: cycle color hue by 32 units (8 distinct primary steps per 255 wheel)
@@ -111,7 +112,7 @@ void PaintGame::onButtonEvent(ButtonId id, ButtonEvent event) {
     else if (event == LONG_PRESS) {
         // set pixel back to black
         if (id == KEY_A) {
-            m_canvas[m_cursor.y][m_cursor.x] = Color::Black();
+            m_canvas[m_cursor.pos.y][m_cursor.pos.x] = Color::Black();
         }
     }
 

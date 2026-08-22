@@ -23,7 +23,9 @@ protected:
 
 public:
     // type aliases: creates short names for requiered structs/classes
+    using Position = core::Position;
     using Color = core::Color;
+    using Pixel = core::Pixel;
     using ButtonId = driver::ButtonId;
     using ButtonEvent = driver::ButtonEvent;
 

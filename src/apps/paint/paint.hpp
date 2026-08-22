@@ -11,8 +11,6 @@
 #pragma once
 
 #include "app/app_interface.hpp"
-#include "core/config.hpp"  // for display size
-#include "core/types.hpp"   // for color and position
 
 namespace pixelino::apps::paint {
 
@@ -28,17 +26,17 @@ public:
     void draw() override;
 
     // --- input callback ---
-    void onButtonEvent(driver::ButtonId id, driver::ButtonEvent event) override;
+    void onButtonEvent(ButtonId id, ButtonEvent event) override;
 
     // --- static Icon renderer for the Main Menu ---
     static void drawIcon();
 
 private:
     // display size matrix storing the painted canvas colors
-    core::Color m_canvas[core::config::display::height][core::config::display::width];
+    Color m_canvas[DisplayHeight][DisplayWidth];
 
     // current cursor coordinates on the grid
-    core::Position m_cursor{};
+    Pixel m_cursor{};
 
     // selected drawing color hue (0-255)
     uint8_t m_currentHue = 0;
