@@ -25,17 +25,17 @@ static bool isPaintRegistered = []() {
 
 void PaintGame::onStart() {
     // initialize cursor position
-    m_cursor.pos.x = 0;
-    m_cursor.pos.y = 0;
+    m_cursor.x = 0;
+    m_cursor.y = 0;
     
     // start with red hue
     m_currentHue = 0; 
-    m_cursor.col = Color::fromHSV(m_currentHue, 255, 255);
+    m_cursor.col = Color::fromHSV(m_currentHue);
 
     // clear all canvas pixels to black
-    for (int y = 0; y < DisplayHeight; y++) {
-        for (int x = 0; x < DisplayWidth; x++) {
-            m_canvas[y][x] = Color::Black();
+    for (int y = 0; y < DISPLAY_HEIGHT; y++) {
+        for (int x = 0; x < DISPLAY_WIDTH; x++) {
+            m_canvas[y][x] = BLACK;
         }
     }
 }
@@ -45,6 +45,7 @@ void PaintGame::onStop() {
     // save highscore (not implemented yet)
 }
 
+// change to absolut time!!!
 void PaintGame::tick(float deltaTime) {
     // blink cursor every 0.25 seconds for visual identification
     m_blinkTimer += deltaTime;
@@ -61,14 +62,12 @@ void PaintGame::tick(float deltaTime) {
 }
 
 void PaintGame::draw() {
-    display.clear();
-
     // bulk copy canvas into display buffer (one call instead of 64 setPixel calls)
-    display.loadBuffer(&m_canvas[0][0], NumLeds);
+    display.loadBuffer(&m_canvas[0][0], NUM_LEDS); // check functionality
 
     // overlay cursor (either current hue or white flash)
     if (m_cursorVisible) {
-        m_cursor.col = Color::fromHSV(m_currentHue, 255, 255);
+        m_cursor.col = Color::fromHSV(m_currentHue);
         display.setPixel(m_cursor);
     }
 
@@ -81,27 +80,23 @@ void PaintGame::draw() {
 
 void PaintGame::onButtonEvent(ButtonId id, ButtonEvent event) {
     if (event == CLICK) {
-        // cache limits to avoid typing them repeatedly
-        std::uint8_t maxX = DisplayWidth - 1;
-        std::uint8_t maxY = DisplayHeight - 1;
-
         // D-Pad navigation with dynamic wrap-around boundaries
         if (id == KEY_UP) {
-            m_cursor.pos.y = (m_cursor.pos.y > 0) ? (m_cursor.pos.y - 1) : maxY;
-        } 
+            m_cursor.y = (m_cursor.y > 0) ? (m_cursor.y - 1) : DISPLAY_HEIGHT;
+        }
         else if (id == KEY_DOWN) {
-            m_cursor.pos.y = (m_cursor.pos.y < maxY) ? (m_cursor.pos.y + 1) : 0;
-        } 
+            m_cursor.y = (m_cursor.y < DISPLAY_HEIGHT) ? (m_cursor.y + 1) : 0;
+        }
         else if (id == KEY_LEFT) {
-            m_cursor.pos.x = (m_cursor.pos.x > 0) ? (m_cursor.pos.x - 1) : maxX;
-        } 
+            m_cursor.x = (m_cursor.x > 0) ? (m_cursor.x - 1) : DISPLAY_WIDTH - 1;
+        }
         else if (id == KEY_RIGHT) {
-            m_cursor.pos.x = (m_cursor.pos.x < maxX) ? (m_cursor.pos.x + 1) : 0;
+            m_cursor.x = (m_cursor.x < DISPLAY_WIDTH - 1) ? (m_cursor.x + 1) : 0;
         }
         
         // Key A: set canvas pixel at cursor to current active color
         else if (id == KEY_A) {
-            m_canvas[m_cursor.pos.y][m_cursor.pos.x] = Color::fromHSV(m_currentHue, 255, 255);
+            m_canvas[m_cursor.y][m_cursor.x] = m_cursor.col;
         }
         
         // Key B: cycle color hue by 32 units (8 distinct primary steps per 255 wheel)
@@ -112,7 +107,7 @@ void PaintGame::onButtonEvent(ButtonId id, ButtonEvent event) {
     else if (event == LONG_PRESS) {
         // set pixel back to black
         if (id == KEY_A) {
-            m_canvas[m_cursor.pos.y][m_cursor.pos.x] = Color::Black();
+            m_canvas[m_cursor.y][m_cursor.x] = BLACK;
         }
     }
 
@@ -124,7 +119,7 @@ void PaintGame::onButtonEvent(ButtonId id, ButtonEvent event) {
 // ===========================================================================================
 
 void PaintGame::drawIcon() {
-	static const Color iconPixels[NumLeds] = {
+	static const Color iconPixels[NUM_LEDS] = {
 		0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 
 		0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 
 		0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 
@@ -135,7 +130,7 @@ void PaintGame::drawIcon() {
 		0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000
 	};
 
-    driver::Display::getInstance().loadBuffer(iconPixels, NumLeds);
+    driver::Display::getInstance().loadBuffer(iconPixels, NUM_LEDS);
 }
 
 } // namespace pixelino::apps::paint

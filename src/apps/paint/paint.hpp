@@ -33,7 +33,7 @@ public:
 
 private:
     // display size matrix storing the painted canvas colors
-    Color m_canvas[DisplayHeight][DisplayWidth];
+    Color m_canvas[DISPLAY_HEIGHT][DISPLAY_WIDTH];
 
     // current cursor coordinates on the grid
     Pixel m_cursor{};

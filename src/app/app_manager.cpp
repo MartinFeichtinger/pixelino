@@ -124,7 +124,7 @@ void AppManager::onError(core::ErrorCode code, core::ErrorMode mode) {
 
 void AppManager::onSystemHalt() {
     // display driver show blue-screen    
-    driver::Display::getInstance().fill(core::Color::Blue());
+    driver::Display::getInstance().fill(core::color::blue);
     driver::Display::getInstance().show();
 
     // print crash report on the serial monitor

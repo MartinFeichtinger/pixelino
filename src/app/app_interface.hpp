@@ -29,6 +29,17 @@ public:
     using ButtonId = driver::ButtonId;
     using ButtonEvent = driver::ButtonEvent;
 
+    // constexpr color aliases
+    static constexpr Color BLACK  {core::color::black};
+    static constexpr Color WHITE  {core::color::white};
+    static constexpr Color RED    {core::color::red};
+    static constexpr Color GREEN  {core::color::green};
+    static constexpr Color BLUE   {core::color::blue};
+    static constexpr Color YELLOW {core::color::yellow};
+    static constexpr Color ORAGNE {core::color::orange};
+    static constexpr Color PURPLE {core::color::purple};
+    static constexpr Color CYAN   {core::color::cyan};
+
     // constexpr for the enum aliases
     static constexpr ButtonEvent PRESS = ButtonEvent::PRESS;
     static constexpr ButtonEvent CLICK = ButtonEvent::CLICK;
@@ -44,9 +55,9 @@ public:
     static constexpr ButtonId KEY_SELECT = ButtonId::KEY_SELECT;
 
     // constants aliases for easier access
-    static constexpr int DisplayWidth = pixelino::core::config::display::width;
-    static constexpr int DisplayHeight = pixelino::core::config::display::height;
-    static constexpr int NumLeds = pixelino::core::config::display::num_leds;
+    static constexpr int DISPLAY_WIDTH = pixelino::core::config::display::width;
+    static constexpr int DISPLAY_HEIGHT = pixelino::core::config::display::height;
+    static constexpr int NUM_LEDS = pixelino::core::config::display::num_leds;
 };
 
 } // namespace pixelino::app

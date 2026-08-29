@@ -20,32 +20,36 @@ namespace pixelino::core {
         constexpr Color(std::uint32_t hex)
             : r((hex >> 16) & 0xFF), g((hex >> 8) & 0xFF), b(hex & 0xFF) {}
 
-        // --- FastLED Color Utilities (Wrapped) ---
         
-        // Creates a color from Hue (0-255), Saturation (0-255), Value/Brightness (0-255)
-        static Color fromHSV(std::uint8_t hue, std::uint8_t sat, std::uint8_t val);
-
-        // Fades this color toward black by a percentage/amount
-        void fadeToBlackBy(std::uint8_t amount);
-
-        // Smoothly blends two colors together (amount: 0 = 100% color A, 255 = 100% color B)
-        static Color blend(const Color& a, const Color& b, std::uint8_t amount);
-
-        // --- Common Color Shortcuts ---
-        static constexpr Color Black()  { return Color{0x000000}; }
-		static constexpr Color White()	{ return Color{0xFFFFFF}; }
-        static constexpr Color Red()	{ return Color{0xFF0000}; }
-        static constexpr Color Green()	{ return Color{0x00FF00}; }
-        static constexpr Color Blue()	{ return Color{0x0000FF}; }
-		static constexpr Color Yellow()	{ return Color{0xFFFF00}; }
-		static constexpr Color Orange()	{ return Color{0xFF8800}; }
-		static constexpr Color Purple()	{ return Color{0xFF00FF}; }
-		static constexpr Color Cyan()	{ return Color{0x00FFFF}; }
-
+        // creates a rgb color from Hue (0-255), Saturation (0-255), Value/Brightness (0-255)
+        static Color fromHSV(std::uint8_t hue, std::uint8_t sat = 255, std::uint8_t val = 255);
     };
 
+    namespace color {
+        constexpr Color black  {0x000000};
+        constexpr Color white  {0xFFFFFF};
+        constexpr Color red    {0xFF0000};
+        constexpr Color green  {0x00FF00};
+        constexpr Color blue   {0x0000FF};
+        constexpr Color yellow {0xFFFF00};
+        constexpr Color orange {0xFF8800};
+        constexpr Color purple {0xFF00FF};
+        constexpr Color cyan   {0x00FFFF};
+    }
+
     struct Pixel {
-        Position pos;
+        union {
+            Position pos;
+            struct {
+                std::uint8_t x;
+                std::uint8_t y;
+            };
+        };
+
         Color col;
+
+        constexpr Pixel() : pos{0, 0}, col{color::black} {}
+        constexpr Pixel(std::uint8_t _x, std::uint8_t _y, Color _c) : pos{_x, _y}, col{_c} {}
+        constexpr Pixel(Position _pos, Color _c) : pos{_pos}, col{_c} {}
     };
 }
