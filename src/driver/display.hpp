@@ -20,7 +20,7 @@ public:
     void clear();
 
     // bulk copy an array of core::Color into the display buffer
-    void loadBuffer(const core::Color* buffer, std::size_t count);
+    void loadBuffer(const core::Color* buffer);
 
     // fill entiere display with one color
 	void fill(core::Color col);

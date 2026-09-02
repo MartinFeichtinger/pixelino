@@ -60,7 +60,7 @@ void PaintGame::tick(uint32_t time_ms) {
 
 void PaintGame::draw() {
     // bulk copy canvas into display buffer (one call instead of 64 setPixel calls)
-    display.loadBuffer(&canvas[0][0], NUM_LEDS); // check functionality
+    display.loadBuffer(&canvas[0][0]); // reference to the first element (this syntax is required in c/c++ for 2D-arrays)
 
     // overlay cursor (either current hue or white flash)
     if (isCursorVisible) {
@@ -133,7 +133,7 @@ void PaintGame::drawIcon() {
 		0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000
 	};
 
-    driver::Display::getInstance().loadBuffer(iconPixels, NUM_LEDS);
+    driver::Display::getInstance().loadBuffer(iconPixels);
 }
 
 } // namespace pixelino::apps::paint

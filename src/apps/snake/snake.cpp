@@ -236,7 +236,7 @@ void SnakeGame::drawIcon() {
         0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000
     };
 
-    driver::Display::getInstance().loadBuffer(iconPixels, core::config::display::num_leds);
+    driver::Display::getInstance().loadBuffer(iconPixels);
 }
 
 } // namespace pixelino::apps::snake

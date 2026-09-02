@@ -32,15 +32,11 @@ void Display::clear() {
 	FastLED.clear();
 }
 
-void Display::loadBuffer(const core::Color* buffer, std::size_t count) {
-    static_assert(sizeof(core::Color) == sizeof(CRGB), "Color memory layout mismatch");
-    
+void Display::loadBuffer(const core::Color* buffer) {
     std::size_t numLeds = core::config::display::num_leds;
-    std::size_t copyCount = std::min(count, static_cast<std::size_t>(numLeds));
 
-	// the display got rotated 180 degree therfore the buffer needs to be invertet to
-    for (std::size_t i = 0; i < copyCount; ++i) {
-        // source index i maps to target index (numLeds - 1 - i)
+	// revert array because the display is build in 180 degree rotated
+    for (std::size_t i = 0; i < numLeds; ++i) {
         const auto& col = buffer[i];
         m_leds[numLeds - 1 - i] = CRGB(col.r, col.g, col.b);
     }
