@@ -74,17 +74,14 @@ void AppManager::tick() {
     driver::ButtonManager::getInstance().tick();
     app::ServiceCLI::getInstance().tick();
 
-    static uint32_t lastFrameTimeMs = 0;
-    const uint32_t currentMs = millis();
-    const uint32_t frameIntervalMs = 33; // 1000ms / 30fps = 33.3ms
+    static uint32_t last_frame_time = 0;
+    const uint32_t frame_interval = 33; // 1000ms / 30fps = 33.3ms
 
-    if (currentMs - lastFrameTimeMs >= frameIntervalMs) {
-        // Calculate exact delta time in seconds
-        float deltaTime = static_cast<float>(currentMs - lastFrameTimeMs) / 1000.0f;
-        lastFrameTimeMs = currentMs;
+    if (millis() - last_frame_time >= frame_interval) {
+        last_frame_time = millis();
 
         if (m_activeApp) {
-            m_activeApp->tick(deltaTime);
+            m_activeApp->tick(millis());
             m_activeApp->draw();
         }
     }

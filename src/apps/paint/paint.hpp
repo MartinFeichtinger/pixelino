@@ -22,7 +22,7 @@ public:
     // --- lifecycle callbacks ---
     void onStart() override;
     void onStop() override;
-    void tick(float deltaTime) override;
+    void tick(uint32_t time) override;
     void draw() override;
 
     // --- input callback ---
@@ -33,17 +33,19 @@ public:
 
 private:
     // display size matrix storing the painted canvas colors
-    Color m_canvas[DISPLAY_HEIGHT][DISPLAY_WIDTH];
+    Color canvas[DISPLAY_HEIGHT][DISPLAY_WIDTH];
 
     // current cursor coordinates on the grid
-    Pixel m_cursor{};
+    Pixel cursor{};
 
     // selected drawing color hue (0-255)
-    uint8_t m_currentHue = 0;
+    uint8_t currentHue = 0;
 
     // timer and state for blinking cursor feedback
-    float m_blinkTimer = 0.0f;
-    bool m_cursorVisible = true;
+    const uint32_t cursorBlinkPeriod_ms = 1800;
+    uint32_t previousCursorBlinkTime_ms = 0;
+    bool isCursorVisible = true;
+    void resetCursorBlinkTime(void);
 };
 
 } // namespace pixelino::apps::paint

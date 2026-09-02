@@ -29,7 +29,7 @@ void SettingsMenu::draw() {
     driver::Display::getInstance().show();
 }
 
-void SettingsMenu::tick(float deltaTime) {
+void SettingsMenu::tick(uint32_t time_ms) {
     // menu logic or animations if needed
 }
 

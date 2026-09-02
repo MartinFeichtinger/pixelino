@@ -25,17 +25,17 @@ static bool isPaintRegistered = []() {
 
 void PaintGame::onStart() {
     // initialize cursor position
-    m_cursor.x = 0;
-    m_cursor.y = 0;
+    cursor.x = 0;
+    cursor.y = 0;
     
     // start with red hue
-    m_currentHue = 0; 
-    m_cursor.col = Color::fromHSV(m_currentHue);
+    currentHue = 0; 
+    cursor.col = Color::fromHSV(currentHue);
 
     // clear all canvas pixels to black
     for (int y = 0; y < DISPLAY_HEIGHT; y++) {
         for (int x = 0; x < DISPLAY_WIDTH; x++) {
-            m_canvas[y][x] = BLACK;
+            canvas[y][x] = BLACK;
         }
     }
 }
@@ -45,30 +45,27 @@ void PaintGame::onStop() {
     // save highscore (not implemented yet)
 }
 
-// change to absolut time!!!
-void PaintGame::tick(float deltaTime) {
-    // blink cursor every 0.25 seconds for visual identification
-    m_blinkTimer += deltaTime;
-
-	if (m_blinkTimer <= 0.5f) {
-		m_cursorVisible = true;
-	}
-	else if (m_blinkTimer <= 1.0f) {
-		m_cursorVisible = false;
-	}
-	else if (m_blinkTimer > 1.0f) {
-		m_blinkTimer=0;
-	}
+void PaintGame::tick(uint32_t time_ms) {
+    // cursor blinking 
+    if (time_ms - previousCursorBlinkTime_ms < cursorBlinkPeriod_ms/2) {
+        isCursorVisible = true;
+    }
+    else if (time_ms - previousCursorBlinkTime_ms < cursorBlinkPeriod_ms) {
+        isCursorVisible = false;
+    }
+    else {
+        previousCursorBlinkTime_ms = time_ms;
+    }
 }
 
 void PaintGame::draw() {
     // bulk copy canvas into display buffer (one call instead of 64 setPixel calls)
-    display.loadBuffer(&m_canvas[0][0], NUM_LEDS); // check functionality
+    display.loadBuffer(&canvas[0][0], NUM_LEDS); // check functionality
 
     // overlay cursor (either current hue or white flash)
-    if (m_cursorVisible) {
-        m_cursor.col = Color::fromHSV(m_currentHue);
-        display.setPixel(m_cursor);
+    if (isCursorVisible) {
+        cursor.col = Color::fromHSV(currentHue);
+        display.setPixel(cursor);
     }
 
     display.show();
@@ -79,39 +76,45 @@ void PaintGame::draw() {
 // ===========================================================================================
 
 void PaintGame::onButtonEvent(ButtonId id, ButtonEvent event) {
-    if (event == CLICK) {
+    if (event == PRESS) {
         // D-Pad navigation with dynamic wrap-around boundaries
         if (id == KEY_UP) {
-            m_cursor.y = (m_cursor.y > 0) ? (m_cursor.y - 1) : DISPLAY_HEIGHT;
+            cursor.y = (cursor.y > 0) ? (cursor.y - 1) : DISPLAY_HEIGHT - 1;
         }
         else if (id == KEY_DOWN) {
-            m_cursor.y = (m_cursor.y < DISPLAY_HEIGHT) ? (m_cursor.y + 1) : 0;
+            cursor.y = (cursor.y < DISPLAY_HEIGHT - 1) ? (cursor.y + 1) : 0;
         }
         else if (id == KEY_LEFT) {
-            m_cursor.x = (m_cursor.x > 0) ? (m_cursor.x - 1) : DISPLAY_WIDTH - 1;
+            cursor.x = (cursor.x > 0) ? (cursor.x - 1) : DISPLAY_WIDTH - 1;
         }
         else if (id == KEY_RIGHT) {
-            m_cursor.x = (m_cursor.x < DISPLAY_WIDTH - 1) ? (m_cursor.x + 1) : 0;
+            cursor.x = (cursor.x < DISPLAY_WIDTH - 1) ? (cursor.x + 1) : 0;
         }
         
         // Key A: set canvas pixel at cursor to current active color
         else if (id == KEY_A) {
-            m_canvas[m_cursor.y][m_cursor.x] = m_cursor.col;
+            canvas[cursor.y][cursor.x] = cursor.col;
         }
         
         // Key B: cycle color hue by 32 units (8 distinct primary steps per 255 wheel)
         else if (id == KEY_B) {
-            m_currentHue += 32;
+            currentHue += 32;
         }
     }
     else if (event == LONG_PRESS) {
         // set pixel back to black
         if (id == KEY_A) {
-            m_canvas[m_cursor.y][m_cursor.x] = BLACK;
+            canvas[cursor.y][cursor.x] = BLACK;
         }
     }
+    // reset cursor blink time to so that the cursor is always visible while he gets manipulated via button presses
+    resetCursorBlinkTime();
+}
 
-	m_blinkTimer=0;
+void PaintGame::resetCursorBlinkTime(void) {
+    // the cursor blink time gets reset to zero and in the next tick call reset to time_ms
+    // when the timing logic in the tick function gets changed this one needs to be adaped too
+    previousCursorBlinkTime_ms = 0;
 }
 
 // ===========================================================================================

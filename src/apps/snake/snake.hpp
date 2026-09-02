@@ -23,7 +23,7 @@ public:
     // --- lifecycle callbacks ---
     void onStart() override;
     void onStop() override;
-    void tick(float deltaTime) override;
+    void tick(std::uint32_t time_ms) override;
     void draw() override;
 
     // --- input callback ---

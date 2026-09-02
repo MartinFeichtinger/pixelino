@@ -13,7 +13,7 @@ void MainMenu::onStop() {
     core::SystemLogger::getInstance().logEvent(core::LogSource::SYSTEM, "MAIN MENU STOPPED");
 }
 
-void MainMenu::tick(float deltaTime) {
+void MainMenu::tick(std::uint32_t time) {
     // menu logic or animations if needed
 }
 

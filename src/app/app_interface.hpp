@@ -12,7 +12,7 @@ public:
 
     virtual void onStart() = 0;
     virtual void onStop() = 0;
-    virtual void tick(float deltaTime) = 0;
+    virtual void tick(uint32_t time_ms) = 0;
     virtual void draw() = 0;
 
     virtual void onButtonEvent(driver::ButtonId id, driver::ButtonEvent event) = 0;

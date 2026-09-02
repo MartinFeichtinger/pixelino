@@ -12,7 +12,7 @@ public:
     void onStart() override;
     void onStop() override;
     void draw() override;
-    void tick(float deltaTime) override;
+    void tick(uint32_t time_ms) override;
     
     void onButtonEvent(driver::ButtonId id, driver::ButtonEvent event) override;
 

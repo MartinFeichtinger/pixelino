@@ -10,7 +10,7 @@ namespace pixelino::apps::snake {
 // ===========================================================================================
 // SELF-REGISTRATION
 // ===========================================================================================
-static bool isSnakeRegistered = []() {
+/*static bool isSnakeRegistered = []() {
     app::AppRegistry::getInstance().registerApp(
         "Snake",
         &SnakeGame::drawIcon,
@@ -19,7 +19,7 @@ static bool isSnakeRegistered = []() {
         }
     );
     return true;
-}();
+}();*/
 
 // ===========================================================================================
 // LIFECYCLE METHODS
@@ -77,7 +77,7 @@ void SnakeGame::spawnApple() {
         }
     }
 }
-
+/*
 void SnakeGame::tick(float deltaTime) {
     if (m_gameOver) {
         // Play death animation as long as not all segments are red yet
@@ -145,7 +145,7 @@ void SnakeGame::tick(float deltaTime) {
         }
     }
 }
-
+*/
 void SnakeGame::draw() {
     driver::Display& display = driver::Display::getInstance();
     display.clear();
