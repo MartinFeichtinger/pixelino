@@ -25,7 +25,6 @@ void SettingsMenu::onStop() {
 }
 
 void SettingsMenu::draw() {
-    driver::Display::getInstance().clear();
     driver::Display::getInstance().show();
 }
 

@@ -148,7 +148,7 @@ void SnakeGame::tick(float deltaTime) {
 */
 void SnakeGame::draw() {
     driver::Display& display = driver::Display::getInstance();
-    display.clear();
+    display.fill(core::color::black);
 
     // Draw the purple apple (Magenta)
     display.setPixel(m_apple.x, m_apple.y, core::Color{255, 0, 255}); 

@@ -26,12 +26,6 @@ void Display::show() {
 	FastLED.show();
 }
 
-// clears the m_leds buffer
-void Display::clear() {
-	//core::SystemLogger::getInstance().logEvent(core::LogSource::DRIVER, "DISPLAY", "CLEARED OUT_BUFF");
-	FastLED.clear();
-}
-
 void Display::loadBuffer(const core::Color* buffer) {
     std::size_t numLeds = core::config::display::num_leds;
 

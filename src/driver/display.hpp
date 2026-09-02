@@ -17,7 +17,6 @@ public:
 	// basic functions
     void begin();
 	void show();
-    void clear();
 
     // bulk copy an array of core::Color into the display buffer
     void loadBuffer(const core::Color* buffer);

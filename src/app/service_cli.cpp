@@ -28,13 +28,13 @@ void ServiceCLI::begin() {
 	helpCmd.setDescription(" Display all available commands and there usage.");
 
 	Command displayCmd = m_cli.addCommand("display", displayCallback);
-	displayCmd.addPositionalArgument("action"); // "fill", "setPixel", "clear", "printBuffer"
+	displayCmd.addPositionalArgument("action"); // "fill", "setPixel", "printBuffer"
 	displayCmd.addArgument("x", "0");
 	displayCmd.addArgument("y", "0");
 	displayCmd.addArgument("r", "0");
 	displayCmd.addArgument("g", "0");
 	displayCmd.addArgument("b", "0");
-	displayCmd.setDescription(" Allows to manipulate the display via the serviceCLI (fill, setPixel, clear, printBuffer).");
+	displayCmd.setDescription(" Allows to manipulate the display via the serviceCLI (fill, setPixel, printBuffer).");
 
 	Command logCmd = m_cli.addCommand("log", logCallback);
 	logCmd.addPositionalArgument("action", "show"); // "show", "clear"
@@ -236,10 +236,6 @@ void ServiceCLI::displayCallback(cmd* c) {
 		display.setPixel(x, y, core::Color(r, g, b));
 		display.show();
 	} 
-	else if (action.equalsIgnoreCase("clear")) {
-		display.clear();
-		display.show();
-	}
 	else if (action.equalsIgnoreCase("printBuffer")) {
 		uint8_t width = core::config::display::width;
     	uint8_t height = core::config::display::height;

@@ -19,7 +19,7 @@ void MainMenu::tick(std::uint32_t time) {
 
 void MainMenu::draw() {
     driver::Display& display = driver::Display::getInstance();
-    display.clear();
+    display.fill(core::color::black);
 
     const std::vector<app::AppRecord>& apps = app::AppRegistry::getInstance().getApps();
     if (apps.empty()) {
