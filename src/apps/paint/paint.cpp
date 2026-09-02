@@ -32,7 +32,7 @@ void PaintGame::onStart() {
     currentHue = 0; 
     cursor.col = Color::fromHSV(currentHue);
 
-    // clear all canvas pixels to black
+    // set all canvas pixels to black
     for (int y = 0; y < DISPLAY_HEIGHT; y++) {
         for (int x = 0; x < DISPLAY_WIDTH; x++) {
             canvas[y][x] = BLACK;
@@ -45,6 +45,7 @@ void PaintGame::onStop() {
     // save highscore (not implemented yet)
 }
 
+// place for the non button related game logic
 void PaintGame::tick(uint32_t time_ms) {
     // cursor blinking 
     if (time_ms - previousCursorBlinkTime_ms < cursorBlinkPeriod_ms/2) {
@@ -58,6 +59,7 @@ void PaintGame::tick(uint32_t time_ms) {
     }
 }
 
+// place the graphics rendering and display output
 void PaintGame::draw() {
     // bulk copy canvas into display buffer (one call instead of 64 setPixel calls)
     display.loadBuffer(&canvas[0][0]); // reference to the first element (this syntax is required in c/c++ for 2D-arrays)
@@ -68,13 +70,18 @@ void PaintGame::draw() {
         display.setPixel(cursor);
     }
 
+    // actual updating of the display
     display.show();
 }
+
+// place for lifecyle helper functions
+
 
 // ===========================================================================================
 // INPUT HANDLING
 // ===========================================================================================
 
+// place for the button input handling logic
 void PaintGame::onButtonEvent(ButtonId id, ButtonEvent event) {
     if (event == PRESS) {
         // D-Pad navigation with dynamic wrap-around boundaries
@@ -111,6 +118,7 @@ void PaintGame::onButtonEvent(ButtonId id, ButtonEvent event) {
     resetCursorBlinkTime();
 }
 
+// place for input related helper functions
 void PaintGame::resetCursorBlinkTime(void) {
     // the cursor blink time gets reset to zero and in the next tick call reset to time_ms
     // when the timing logic in the tick function gets changed this one needs to be adaped too

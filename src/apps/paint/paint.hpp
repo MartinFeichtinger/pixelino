@@ -16,19 +16,19 @@ namespace pixelino::apps::paint {
 
 class PaintGame : public app::IApplication {
 public:
-    PaintGame() = default;
-    ~PaintGame() override = default;
+    PaintGame() = default;              // constructor
+    ~PaintGame() override = default;    // destructor
 
-    // --- lifecycle callbacks ---
+    // lifecycle callbacks from the application interface
     void onStart() override;
     void onStop() override;
-    void tick(uint32_t time) override;
+    void tick(uint32_t time_ms) override;
     void draw() override;
 
-    // --- input callback ---
+    // button input callback (gets called for every button event)
     void onButtonEvent(ButtonId id, ButtonEvent event) override;
 
-    // --- static Icon renderer for the Main Menu ---
+    // static icon renderer for the main menu (is added via the app registry)
     static void drawIcon();
 
 private:
