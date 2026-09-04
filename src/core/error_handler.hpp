@@ -21,7 +21,7 @@ public:
 private:
     ErrorHandler() = default;
 
-    ErrorMode m_mode = ErrorMode::LOG_LIVE;
+    ErrorMode m_mode = ErrorMode::BRODCAST;
     IErrorObserver* m_observer = nullptr;
 
     void haltSystem();
