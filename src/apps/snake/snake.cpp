@@ -1,16 +1,13 @@
 #include "apps/snake/snake.hpp"
-#include "core/system_logger.hpp"
-#include "driver/display.hpp"
 #include "app/app_registry.hpp"
 #include <cstdlib>   // for rand()
-#include <algorithm> // for std::max
 
 namespace pixelino::apps::snake {
 
 // ===========================================================================================
 // SELF-REGISTRATION
 // ===========================================================================================
-/*static bool isSnakeRegistered = []() {
+static bool isSnakeRegistered = []() {
     app::AppRegistry::getInstance().registerApp(
         "Snake",
         &SnakeGame::drawIcon,
@@ -19,160 +16,182 @@ namespace pixelino::apps::snake {
         }
     );
     return true;
-}();*/
+}();
 
 // ===========================================================================================
 // LIFECYCLE METHODS
 // ===========================================================================================
 
 void SnakeGame::onStart() {
-    core::SystemLogger::getInstance().logEvent(core::LogSource::SYSTEM, "SNAKE STARTED");
     resetGame();
 }
 
 void SnakeGame::onStop() {
-    core::SystemLogger::getInstance().logEvent(core::LogSource::SYSTEM, "SNAKE STOPPED");
+    // maybe highscore saving
 }
 
 void SnakeGame::resetGame() {
-    m_length = 3;
-    
-    // Start in the middle going right
-    uint8_t startX = core::config::display::width / 2;
-    uint8_t startY = core::config::display::height / 2;
-    
-    // Explicitly cast the math results to uint8_t to prevent narrowing warnings
-    m_body[0] = {startX, startY};
-    m_body[1] = {static_cast<uint8_t>(startX - 1), startY};
-    m_body[2] = {static_cast<uint8_t>(startX - 2), startY};
+    // start in the middle going right
+    Position startHeadPos {DISPLAY_WIDTH/2, DISPLAY_HEIGHT/2};
+    body[0] = startHeadPos;
+    body[1].x = startHeadPos.x - 1;
+    body[1].y = startHeadPos.y;
+    body[2].x = startHeadPos.x - 2;
+    body[2].y = startHeadPos.y;  
+    headDirection=RIGHT;
+    length = 3;
 
-    m_dx = 1;
-    m_dy = 0;
-    
-    m_moveTimer = 0.0f;
-    m_moveInterval = 0.35f;
-    m_gameOver = false;
-    m_inputProcessed = false;
+    // reset game states
+    lastTickTime_ms = 0;
+    lastMoveTime_ms = 0;
+    gameOver = false;
+    inputProcessed = false;
 
-    // Reset death animation variables
-    m_deathAnimIndex = 0;
-    m_deathAnimTimer = 0.0f;
+    // reset death animation variables
+    deathAnimIndex = 0;
+    lastDeathSegAnimTime_ms = 0;
 
     spawnApple();
 }
 
 void SnakeGame::spawnApple() {
-    bool valid = false;
-    while (!valid) {
-        m_apple.x = rand() % core::config::display::width;
-        m_apple.y = rand() % core::config::display::height;
-        
-        valid = true;
-        // Make sure the apple doesn't spawn ON the snake
-        for (int i = 0; i < m_length; ++i) {
-            if (m_body[i].x == m_apple.x && m_body[i].y == m_apple.y) {
-                valid = false;
-                break;
+    size_t emptyFields = NUM_LEDS - length;
+    
+    if (emptyFields > NUM_LEDS) return;
+
+    size_t targetEmptyIndex = rand() % emptyFields;
+    size_t emptyCounter = 0;
+
+    // iterated through every possible position on the display
+    for (size_t y = 0; y < DISPLAY_HEIGHT; y++) {
+        for (size_t x = 0; x < DISPLAY_WIDTH; x++) {
+            // check if specific point is occupied by the snake
+            bool isOccupied = false;
+            for (size_t i = 0; i < length; i++) {
+                if(body[i].x == x && body[i].y == y) {
+                    isOccupied = true;
+                    break;
+                }
+            }
+
+            // if field is empty -> count it
+            if (!isOccupied) {
+                if (emptyCounter == targetEmptyIndex) {
+                    apple.x = x;
+                    apple.y = y;
+                    return;
+                }
+                else {
+                    emptyCounter++;
+                }
             }
         }
     }
 }
-/*
-void SnakeGame::tick(float deltaTime) {
-    if (m_gameOver) {
-        // Play death animation as long as not all segments are red yet
-        if (m_deathAnimIndex < m_length) {
-            m_deathAnimTimer += deltaTime;
-            if (m_deathAnimTimer >= 0.1f) { // 0.1 seconds per snake segment
-                m_deathAnimTimer = 0.0f;
-                m_deathAnimIndex++;
+
+void SnakeGame::tick(uint32_t time_ms) {
+    if (gameOver) {
+        // play death animation as long as not all segments are red yet
+        if (deathAnimIndex < length) {
+            if (time_ms - lastDeathSegAnimTime_ms >= 100) { // 0.1 seconds per snake segment
+                lastDeathSegAnimTime_ms = time_ms;
+                deathAnimIndex++;
             }
         }
-        return; // Skip normal movement while dead
+        return; // skip normal movement while dead
     }
 
-    m_moveTimer += deltaTime;
+    if (time_ms - lastMoveTime_ms >= moveInterval_ms) {
+        lastMoveTime_ms = time_ms;
+        inputProcessed = false; // allow a new button press for the next move
 
-    if (m_moveTimer >= m_moveInterval) {
-        m_moveTimer = 0.0f;
-        m_inputProcessed = false; // Allow a new button press for the next move
+        // calculate next head position
+        Position currentHeadPos = body[0];
+        Position nextHeadPos;
 
-        // Calculate where the head will go next using signed integers
-        int nextX = m_body[0].x + m_dx;
-        int nextY = m_body[0].y + m_dy;
+        switch (headDirection) {
+            case RIGHT: {
+                nextHeadPos.x = currentHeadPos.x < DISPLAY_WIDTH - 1 ? currentHeadPos.x + 1 : 0;
+                nextHeadPos.y = currentHeadPos.y;
+                break;
+            }
+            case LEFT: {
+                nextHeadPos.x = currentHeadPos.x > 0 ? currentHeadPos.x - 1 : DISPLAY_WIDTH - 1;
+                nextHeadPos.y = currentHeadPos.y;
+                break;
+            }
+            case DOWN: {
+                nextHeadPos.x = currentHeadPos.x;
+                nextHeadPos.y = currentHeadPos.y < DISPLAY_HEIGHT - 1 ? currentHeadPos.y + 1 : 0;
+                break;
+            }
+            case UP: {
+                nextHeadPos.x = currentHeadPos.x;
+                nextHeadPos.y = currentHeadPos.y > 0 ? currentHeadPos.y - 1 : DISPLAY_HEIGHT - 1;
+                break;
+            }
+        }
 
-        // Wrap around boundaries (Snake II style)
-        if (nextX < 0) nextX = core::config::display::width - 1;
-        else if (nextX >= core::config::display::width) nextX = 0;
-        
-        if (nextY < 0) nextY = core::config::display::height - 1;
-        else if (nextY >= core::config::display::height) nextY = 0;
-
-        // Now that bounds are checked, safely cast to uint8_t
-        core::Position nextHead = {static_cast<uint8_t>(nextX), static_cast<uint8_t>(nextY)};
-
-        // Check self-collision (we don't check the very last tail segment 
-        // because it will move forward out of the way)
-        for (int i = 0; i < m_length - 1; ++i) {
-            if (nextHead.x == m_body[i].x && nextHead.y == m_body[i].y) {
-                m_gameOver = true;
-                // Color the head red immediately and start the animation timer
-                m_deathAnimIndex = 1; 
-                m_deathAnimTimer = 0.0f;
+        // check self-collision (don't check the very last tail segment because it moves out of the way)
+        for (size_t i = 0; i < length - 1; i++) {
+            if (nextHeadPos.x == body[i].x && nextHeadPos.y == body[i].y) {
+                gameOver = true;
+                // color the head red immediately and start the animation timer
+                deathAnimIndex = 1;
+                lastDeathSegAnimTime_ms = time_ms;
                 return;
             }
         }
 
-        // Did we eat the apple?
-        bool ateApple = (nextHead.x == m_apple.x && nextHead.y == m_apple.y);
-        
+        // did the snake ate the apple?
+        bool ateApple = (nextHeadPos.x == apple.x && nextHeadPos.y == apple.y);
+
         if (ateApple) {
-            if (m_length < MAX_LENGTH) m_length++;
-            // Make the game progressively faster
-            m_moveInterval = std::max(0.10f, m_moveInterval - 0.015f); 
+            if (length < NUM_LEDS) length++;
         }
 
         // Shift body array forward
-        for (int i = m_length - 1; i > 0; --i) {
-            m_body[i] = m_body[i - 1];
+        for (size_t i = length - 1; i > 0; --i) {
+            body[i] = body[i - 1];
         }
-        
-        // Put head in new position
-        m_body[0] = nextHead;
+
+        // put head in new position
+        body[0] = nextHeadPos;
 
         if (ateApple) {
             spawnApple();
         }
     }
+
+    lastTickTime_ms = time_ms;
 }
-*/
+
 void SnakeGame::draw() {
-    driver::Display& display = driver::Display::getInstance();
-    display.fill(core::color::black);
+    display.fill(BLACK);
 
-    // Draw the purple apple (Magenta)
-    display.setPixel(m_apple.x, m_apple.y, core::Color{255, 0, 255}); 
+    // draw the purple apple
+    display.setPixel(apple.x, apple.y, PURPLE);
 
-    // Draw the snake
-    for (int i = 0; i < m_length; ++i) {
-        if (m_gameOver && i < m_deathAnimIndex) {
-            // Death animation: Pixel turns blood red
+    // draw the snake
+    for (size_t i = 0; i < length; i++) {
+        if (gameOver && i < deathAnimIndex) {
+            // death animation: pixel turns blood red
             if (i == 0) {
-                // Bright red for the death head
-                display.setPixel(m_body[i].x, m_body[i].y, core::Color{255, 0, 0});
+                // bright red for the death head
+                display.setPixel(body[i].x, body[i].y, RED);
             }
             else {
-                // Dark red for the death body
-                display.setPixel(m_body[i].x, m_body[i].y, core::Color{20, 0, 0});
+                // dark red for the death body
+                display.setPixel(body[i].x, body[i].y, Color{20, 0, 0});
             }
         } else {
-            // Alive: Normal green
+            // alive: normal green
             if (i == 0) {
-                // Bright green for the head
-                display.setPixel(m_body[i].x, m_body[i].y, core::Color{0, 255, 0});
+                // bright green for the head
+                display.setPixel(body[i].x, body[i].y, GREEN);
             } else {
-                // Slightly darker green for the body
-                display.setPixel(m_body[i].x, m_body[i].y, core::Color{0, 100, 0});
+                // slightly darker green for the body
+                display.setPixel(body[i].x, body[i].y, Color{0, 100, 0});
             }
         }
     }
@@ -184,36 +203,35 @@ void SnakeGame::draw() {
 // INPUT HANDLING
 // ===========================================================================================
 
-void SnakeGame::onButtonEvent(driver::ButtonId id, driver::ButtonEvent event) {
-    // USING PRESS INSTEAD OF CLICK FOR IMMEDIATE REACTION
-    if (event == driver::ButtonEvent::PRESS) {
-        
-        if (m_gameOver) {
-            // Pressing A or B restarts the game if we lost
-            if (id == driver::ButtonId::KEY_A || id == driver::ButtonId::KEY_B) {
+void SnakeGame::onButtonEvent(ButtonId id, ButtonEvent event) {
+    if (event == PRESS) {
+
+        if (gameOver) {
+            // pressing A or B restarts the game if we lost
+            if (id == KEY_A || id == KEY_B) {
                 resetGame();
             }
             return;
         }
 
-        // Only allow one directional change per tick to prevent the snake from 
+        // only allow one directional change per tick to prevent the snake from
         // turning 180 degrees onto itself in a single frame.
-        if (!m_inputProcessed) {
-            if (id == driver::ButtonId::KEY_UP && m_dy != 1) {
-                m_dx = 0; m_dy = -1; 
-                m_inputProcessed = true;
-            } 
-            else if (id == driver::ButtonId::KEY_DOWN && m_dy != -1) {
-                m_dx = 0; m_dy = 1; 
-                m_inputProcessed = true;
-            } 
-            else if (id == driver::ButtonId::KEY_LEFT && m_dx != 1) {
-                m_dx = -1; m_dy = 0; 
-                m_inputProcessed = true;
-            } 
-            else if (id == driver::ButtonId::KEY_RIGHT && m_dx != -1) {
-                m_dx = 1; m_dy = 0; 
-                m_inputProcessed = true;
+        if (!inputProcessed) {
+            if (id == KEY_RIGHT && headDirection != LEFT) {
+                headDirection = RIGHT;
+                inputProcessed = true;
+            }
+            else if (id == KEY_LEFT && headDirection != RIGHT) {
+                headDirection = LEFT;
+                inputProcessed = true;
+            }
+            else if (id == KEY_UP && headDirection != DOWN) {
+                headDirection = UP;
+                inputProcessed = true;
+            }
+            else if (id == KEY_DOWN && headDirection != UP) {
+                headDirection = DOWN;
+                inputProcessed = true;
             }
         }
     }
@@ -224,8 +242,8 @@ void SnakeGame::onButtonEvent(driver::ButtonId id, driver::ButtonEvent event) {
 // ===========================================================================================
 
 void SnakeGame::drawIcon() {
-    // Custom icon showing a little green snake and a purple apple (0xFF00FF)
-    static const core::Color iconPixels[core::config::display::num_leds] = {
+    // custom icon showing a little green snake and a purple apple (0xFF00FF)
+    static const Color iconPixels[NUM_LEDS] = {
         0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 
         0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 
         0x000000, 0x000000, 0x000000, 0x000000, 0x00FF00, 0x00FF00, 0x000000, 0x000000, 
@@ -236,6 +254,8 @@ void SnakeGame::drawIcon() {
         0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000
     };
 
+    // drawIcon() is static, so it can't use the inherited instance member
+    // `display` — fall back to the singleton directly here.
     driver::Display::getInstance().loadBuffer(iconPixels);
 }
 
