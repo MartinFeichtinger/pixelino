@@ -5,12 +5,13 @@ Pixelino is a project for a soldering workshop for children. The core idea is to
 * **OneButton** - button event generation
 * **SimpleCLI** - controling and debugging
 
-## Getting Started (recommented way)
+## Set up development system (recommented way)
 1. Install Visual Studio Code
-2. Install the extensions C/C++ and PlatformIO IDE
-3. Clone the pixelino github repo (directly in vs code or extern and open the hole project folder with vs code) 
-4. Click compile (at the first compilation depentend libraies will be downloade)
-5. Connect the ESP and upload the firmware
-6. *Now everything should work...*
-7. For serial communication and debugging open the serial monitor and click on the onboard button to activate ther service CLI.
-8. Look into src/apps/paint to see how to programm an application for the pixelino
+2. Install the gcc compiler
+3. Install the extensions C/C++ and PlatformIO IDE
+4. Clone the pixelino github repo (directly in vs code or extern and open the hole project folder with vs code) 
+5. Click compile (at the first compilation depentend libraies will be downloade)
+6. Connect the ESP and upload the firmware
+7. *Now everything should work...*
+8. For serial communication and debugging open the serial monitor and click on the BOOT button (accesible via a hole on the backside of the pixelino) to activate the service CLI.
+9.  Create a new branche for your own first game
