@@ -9,9 +9,21 @@ namespace pixelino::apps::paint {
 // runs once at startup before setup(). adds Paint to the Main Menu without 
 // needing to include paint_game.hpp inside main_menu.cpp.
 static bool isPaintRegistered = []() {
+    // custom icon that gets shown in the main menu
+	static const core::Color iconPixels[core::config::display::num_leds] = {
+		0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 
+		0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 
+		0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 
+		0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 
+		0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 
+		0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 
+		0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 
+		0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000
+	};
+
     app::AppRegistry::getInstance().registerApp(
         "Paint",
-        &PaintGame::drawIcon,
+        iconPixels,
         []() -> app::IApplication* {
             return new PaintGame();
         }
@@ -123,25 +135,6 @@ void PaintGame::resetCursorBlinkTime(void) {
     // the cursor blink time gets reset to zero and in the next tick call reset to time_ms
     // when the timing logic in the tick function gets changed this one needs to be adaped too
     previousCursorBlinkTime_ms = 0;
-}
-
-// ===========================================================================================
-// MENU ICON
-// ===========================================================================================
-
-void PaintGame::drawIcon() {
-	static const Color iconPixels[NUM_LEDS] = {
-		0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 
-		0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 
-		0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 
-		0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 
-		0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 0x00FF00, 
-		0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 0xABAA00, 
-		0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000, 0xAB5500, 
-		0xAB5500, 0xABAA00, 0x00FF00, 0x00AB55, 0x0000FF, 0x5500AB, 0xAA0055, 0xFF0000
-	};
-
-    driver::Display::getInstance().loadBuffer(iconPixels);
 }
 
 } // namespace pixelino::apps::paint

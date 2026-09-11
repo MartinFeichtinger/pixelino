@@ -8,9 +8,21 @@ namespace pixelino::apps::snake {
 // SELF-REGISTRATION
 // ===========================================================================================
 static bool isSnakeRegistered = []() {
+    // custom icon showing a little green snake and a purple apple (0xFF00FF)
+    static const core::Color iconPixels[core::config::display::num_leds] = {
+        0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 
+        0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 
+        0x000000, 0x000000, 0x000000, 0x000000, 0x00FF00, 0x00FF00, 0x000000, 0x000000, 
+        0x000000, 0x000000, 0x000000, 0x000000, 0x00FF00, 0x000000, 0xFF00FF, 0x000000, 
+        0x000000, 0x00FF00, 0x000000, 0x000000, 0x00FF00, 0x000000, 0x000000, 0x000000, 
+        0x000000, 0x00FF00, 0x00FF00, 0x00FF00, 0x00FF00, 0x000000, 0x000000, 0x000000, 
+        0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 
+        0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000
+    };
+
     app::AppRegistry::getInstance().registerApp(
         "Snake",
-        &SnakeGame::drawIcon,
+        iconPixels,
         []() -> app::IApplication* {
             return new SnakeGame();
         }
@@ -235,28 +247,6 @@ void SnakeGame::onButtonEvent(ButtonId id, ButtonEvent event) {
             }
         }
     }
-}
-
-// ===========================================================================================
-// MENU ICON
-// ===========================================================================================
-
-void SnakeGame::drawIcon() {
-    // custom icon showing a little green snake and a purple apple (0xFF00FF)
-    static const Color iconPixels[NUM_LEDS] = {
-        0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 
-        0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 
-        0x000000, 0x000000, 0x000000, 0x000000, 0x00FF00, 0x00FF00, 0x000000, 0x000000, 
-        0x000000, 0x000000, 0x000000, 0x000000, 0x00FF00, 0x000000, 0xFF00FF, 0x000000, 
-        0x000000, 0x00FF00, 0x000000, 0x000000, 0x00FF00, 0x000000, 0x000000, 0x000000, 
-        0x000000, 0x00FF00, 0x00FF00, 0x00FF00, 0x00FF00, 0x000000, 0x000000, 0x000000, 
-        0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 
-        0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000, 0x000000
-    };
-
-    // drawIcon() is static, so it can't use the inherited instance member
-    // `display` — fall back to the singleton directly here.
-    driver::Display::getInstance().loadBuffer(iconPixels);
 }
 
 } // namespace pixelino::apps::snake

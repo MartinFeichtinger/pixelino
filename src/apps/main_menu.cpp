@@ -27,8 +27,8 @@ void MainMenu::draw() {
         return;
     }
 
-    if (apps[s_selectedIndex].drawIcon) {
-        apps[s_selectedIndex].drawIcon();
+    if (apps[s_selectedIndex].icon) {
+        display.loadBuffer(apps[s_selectedIndex].icon);
     }
 
     display.show();

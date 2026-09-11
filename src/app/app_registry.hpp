@@ -1,5 +1,6 @@
 #pragma once
 
+#include "core/types.hpp"
 #include "app/app_interface.hpp"
 #include <vector>
 #include <functional>
@@ -11,7 +12,7 @@ using IconDrawCallback = std::function<void()>;             // callback to rende
 
 struct AppRecord {
     const char* name;
-    IconDrawCallback drawIcon; 
+    const core::Color* icon;; 
     AppFactory create;         
 };
 
@@ -21,8 +22,8 @@ public:
     AppRegistry(const AppRegistry&) = delete;
     void operator=(const AppRegistry&) = delete;
 
-    void registerApp(const char* name, IconDrawCallback drawIcon, AppFactory factory) {
-        m_apps.push_back({name, drawIcon, factory});
+    void registerApp(const char* name, const core::Color* icon, AppFactory factory) {
+        m_apps.push_back({name, icon, factory});
     }
 
     const std::vector<AppRecord>& getApps() const {
