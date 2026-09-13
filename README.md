@@ -14,4 +14,18 @@ Pixelino is a project for a soldering workshop for children. The core idea is to
 6. Connect the ESP and upload the firmware
 7. *Now everything should work...*
 8. For serial communication and debugging open the serial monitor and click on the BOOT button (accesible via a hole on the backside of the pixelino) to activate the service CLI.
-9.  Create a new branche for your own first game
+
+## How to Start Programming Games
+
+Every game inherently follows the same blueprint and must implement a standard set of core components.
+
+**Prerequisites & Reference Code**
+* **[App Development Documentation](./docs/app_development.md):** Review this first to understand core architectural concepts and available framework APIs.
+* **[Paint Reference Game](./src/apps/paint/paint.hpp):** Inspect this simple implementation for practical examples of display rendering, button inputs, and timing logic. Use it as a starter template if your game shares similar mechanics.
+* **[Empty Template](./src/apps/empty_template/empty_template.hpp):** Use this minimal boilerplate setup if you prefer building your game from scratch.
+
+**Setup Steps**
+1. **Create a Git branch:** Create a new branch named after your game.
+2. **Create the app folder:** Add a new directory under `src/apps/<your_game_name>/`.
+3. **Copy boilerplate files:** Copy the `.hpp` and `.cpp` template files into your new folder and rename them to match your game.
+4. **Implement your game:** Add your custom logic, and start coding.
