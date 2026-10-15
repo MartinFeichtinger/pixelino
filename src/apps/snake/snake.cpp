@@ -69,7 +69,7 @@ void SnakeGame::resetGame() {
 void SnakeGame::spawnApple() {
     size_t emptyFields = NUM_LEDS - length;
     
-    if (emptyFields > NUM_LEDS) return;
+    if (emptyFields > NUM_LEDS || emptyFields == 0) return;
 
     size_t targetEmptyIndex = rand() % emptyFields;
     size_t emptyCounter = 0;
@@ -171,7 +171,14 @@ void SnakeGame::tick(uint32_t time_ms) {
         body[0] = nextHeadPos;
 
         if (ateApple) {
-            spawnApple();
+            if (length >= NUM_LEDS) {
+                gameOver = true;
+                deathAnimIndex = 1;
+                lastDeathSegAnimTime_ms = time_ms;
+            }
+            else {
+                spawnApple();
+            }
         }
     }
 
