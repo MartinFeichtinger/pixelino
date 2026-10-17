@@ -1,7 +1,8 @@
 #include "apps/main_menu.hpp"
-#include "app/app_manager.hpp"
-#include "driver/display.hpp"
 #include "core/system_logger.hpp"
+#include "driver/display.hpp"
+#include "driver/audio.hpp"
+#include "app/app_manager.hpp"
 
 namespace pixelino::apps::menu {
 
@@ -42,6 +43,8 @@ void MainMenu::onButtonEvent(driver::ButtonId id, driver::ButtonEvent event) {
 
     if (event == driver::ButtonEvent::CLICK) {
         
+        driver::Audio::getInstance().playTone(core::Pitch::A4, 100);
+
         // KEY_UP -> Circular step backward
         if (id == driver::ButtonId::KEY_UP) {
             s_selectedIndex = (s_selectedIndex - 1 + totalApps) % totalApps;
