@@ -13,9 +13,17 @@
 #include "app/app_interface.hpp"
 #include "apps/main_menu.hpp"
 
+#include <cstdlib>
+#include "esp_random.h"
+#include <Arduino.h>
+
 namespace pixelino::app {
 
 void AppManager::begin() {
+    // init randome number generators using the esp32 true randome number generator
+    srand(esp_random());        // c++ rand() seeding
+    randomSeed(esp_random());   // arduino randome(min, max) seeding
+
     // system inits
     core::ErrorHandler::getInstance().setObserver(this);
 
