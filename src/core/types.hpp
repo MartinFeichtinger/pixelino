@@ -23,6 +23,18 @@ namespace pixelino::core {
         
         // creates a rgb color from Hue (0-255), Saturation (0-255), Value/Brightness (0-255)
         static Color fromHSV(std::uint8_t hue, std::uint8_t sat = 255, std::uint8_t val = 255);
+
+		bool operator==(const Color c){
+			return r == c.r && g == c.g && b == c.b;
+		}
+
+		bool operator!=(const Color c){
+			return r != c.r || g != c.g || b != c.b;
+		}
+
+		std::uint32_t toHex(){
+			return ((std::uint32_t)r) << 16 | ((std::uint32_t)g) << 8 | ((std::uint32_t)b);
+		}
     };
 
     namespace color {
