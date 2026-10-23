@@ -189,7 +189,7 @@ void SnakeGame::draw() {
     display.fill(BLACK);
 
     // draw the purple apple
-    display.setPixel(apple.x, apple.y, PURPLE);
+    display.setPixel(apple.x, apple.y, MAGENTA);
 
     // draw the snake
     for (size_t i = 0; i < length; i++) {
