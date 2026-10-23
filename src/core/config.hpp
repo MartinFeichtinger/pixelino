@@ -17,6 +17,7 @@ namespace pixelino::core::config {
 		constexpr std::uint8_t key_b			= 13;
 		constexpr std::uint8_t key_select		= 5;
 		constexpr std::uint8_t key_start		= 19;
+		constexpr std::uint8_t audio			= 25;
 	}
 
 	namespace display {
