@@ -30,15 +30,14 @@ public:
     using ButtonEvent = driver::ButtonEvent;
 
     // constexpr color aliases
-    static constexpr Color BLACK  {core::color::black};
-    static constexpr Color WHITE  {core::color::white};
-    static constexpr Color RED    {core::color::red};
-    static constexpr Color GREEN  {core::color::green};
-    static constexpr Color BLUE   {core::color::blue};
-    static constexpr Color YELLOW {core::color::yellow};
-    static constexpr Color ORAGNE {core::color::orange};
-    static constexpr Color PURPLE {core::color::purple};
-    static constexpr Color CYAN   {core::color::cyan};
+    static constexpr Color BLACK   {core::color::black};
+    static constexpr Color WHITE   {core::color::white};
+    static constexpr Color RED     {core::color::red};
+    static constexpr Color GREEN   {core::color::green};
+    static constexpr Color BLUE    {core::color::blue};
+    static constexpr Color CYAN    {core::color::cyan};
+    static constexpr Color MAGENTA {core::color::magenta};
+    static constexpr Color YELLOW  {core::color::yellow};
 
     // constexpr for the enum aliases
     static constexpr ButtonEvent PRESS = ButtonEvent::PRESS;
