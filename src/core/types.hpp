@@ -38,15 +38,14 @@ namespace pixelino::core {
     };
 
     namespace color {
-        constexpr Color black  {0x000000};
-        constexpr Color white  {0xFFFFFF};
-        constexpr Color red    {0xFF0000};
-        constexpr Color green  {0x00FF00};
-        constexpr Color blue   {0x0000FF};
-        constexpr Color yellow {0xFFFF00};
-        constexpr Color orange {0xFF8800};
-        constexpr Color purple {0xFF00FF};
-        constexpr Color cyan   {0x00FFFF};
+        constexpr Color black   {0x000000};
+        constexpr Color white   {0xFFFFFF};
+        constexpr Color red     {0xFF0000};
+        constexpr Color green   {0x00FF00};
+        constexpr Color blue    {0x0000FF};
+        constexpr Color cyan    {0x00FFFF};
+        constexpr Color magenta {0xFF00FF};
+        constexpr Color yellow  {0xFFFF00};
     }
 
     struct Pixel {
