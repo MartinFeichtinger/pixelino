@@ -29,3 +29,8 @@ Every game inherently follows the same blueprint and must implement a standard s
 2. **Create the app folder:** Add a new directory under `src/apps/<your_game_name>/`.
 3. **Copy boilerplate files:** Copy the `.hpp` and `.cpp` template files into your new folder and rename them to match your game.
 4. **Implement your game:** Add your custom logic, and start coding.
+
+## Games
+* Paint
+* Snake
+* [Tetris](src/apps/tetris/Tetris.md)
